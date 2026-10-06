@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Travy en WhatsApp</title>
+  <style>
+    :root {
+      --wa-head: #008069;
+      --wa-bg: #efeae2;
+      --wa-me: #d9fdd3;
+      --wa-bot: #ffffff;
+      --wa-tick: #53bdeb;
+      --wa-link: #027eb5;
+      --wa-muted: #667781;
+      /* Color de marca de Travy: el avatar NUNCA queda negro, aunque la imagen tenga transparencia */
+      --av-1: #4c9aff;
+      --av-2: #2f78d6;
+    }
+
+    * { box-sizing: border-box; margin: 0 }
+
+    html, body {
+      height: 100%;
+      background: transparent;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      color: #111b21;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { margin: 0 }
+
+    .wa {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--wa-bg);
+      overflow: hidden;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    /* ---------- Cabecera ---------- */
+    .hd {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--wa-head);
+      color: #fff;
+      padding: 12px 12px 10px 8px;
+    }
+
+    .hd .back { flex: none; display: block }
+
+    /* Avatar: círculo completo, imagen a sangre, fondo de marca como respaldo */
+    .av {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      flex: none;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(145deg, #dbe8ff, #8fb8ff);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .av img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      /* La burbuja ocupa ~78% del PNG y el resto es negro: se amplía para que
+         la burbuja llene el círculo completo y no asome nada oscuro */
+      transform: scale(1.32);
+    }
+
+    .hd .who { min-width: 0; flex: 1 }
+
+    .hd b {
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hd small {
+      display: block;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .82);
+      margin-top: 1px;
+    }
+
+    .hd .ico { flex: none; display: flex; gap: 18px; padding-right: 4px }
+
+    /* ---------- Chat ---------- */
+    .chat {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+      padding: 12px 10px;
+      background-image: radial-gradient(rgba(11, 20, 26, .06) 1px, transparent 1px);
+      background-size: 14px 14px;
+    }
+
+    .stack { display: flex; flex-direction: column; gap: 6px }
+    .stack > * { flex: none }
+
+    .chip {
+      align-self: center;
+      background: rgba(255, 255, 255, .95);
+      color: #54656f;
+      font-size: 11.5px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px .5px rgba(11, 20, 26, .13);
+      margin-bottom: 2px;
+    }
+
+    .chip.ctx {
+      background: #fff3c4;
+      color: #6b5a1d;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .b {
+      max-width: 86%;
+      padding: 6px 9px 5px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.35;
+      box-shadow: 0 1px .5px rgba(11, 20, 26, .13);
+    }
+
+    .me { align-self: flex-end; background: var(--wa-me); border-top-right-radius: 0 }
+    .bot { align-self: flex-start; background: var(--wa-bot); border-top-left-radius: 0 }
+
+    .t {
+      display: block;
+      text-align: right;
+      font-size: 10.5px;
+      color: var(--wa-muted);
+      margin-top: 2px;
+    }
+
+    .t svg { vertical-align: -1px; margin-left: 3px }
+
+    /* Tarjeta con botones */
+    .card { padding: 0; overflow: hidden; min-width: 72% }
+    .card .in { padding: 6px 9px 5px }
+    .card b { font-size: 14px }
+    .card .m { font-size: 12px; color: var(--wa-muted) }
+    .card p { margin-top: 3px; font-size: 14px }
+
+    .btn {
+      border-top: 1px solid rgba(0, 0, 0, .1);
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--wa-link);
+    }
+
+    /* Opciones de regreso al hotel */
+    .opts { margin-top: 4px }
+
+    .opts div {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, .07);
+      font-size: 13.5px;
+    }
+
+    .opts div:last-child { border: 0 }
+    .opts small { color: var(--wa-muted); font-size: 12.5px }
+
+    /* ---------- Barra inferior ---------- */
+    .bar {
+      flex: none;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: #f0f2f5;
+      padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .fld {
+      flex: 1;
+      height: 38px;
+      border-radius: 19px;
+      background: #fff;
+      color: #8696a0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+    }
+
+    .mic {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #00a884;
+      display: grid;
+      place-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wa" id="shot">
+    <div class="hd">
+      <svg class="back" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7" />
+      </svg>
+
+      <div class="av" aria-hidden="true">
+        T
+        <img src="/perfil.png" alt="Travy" onerror="this.remove()">
+      </div>
+
+      <div class="who">
+        <b>Travy</b>
+        <small>en línea</small>
+      </div>
+
+      <div class="ico" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="6" width="13" height="12" rx="2.5" />
+          <path d="M16 10.5l5-3v9l-5-3" />
+        </svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.8" />
+          <circle cx="12" cy="12" r="1.8" />
+          <circle cx="12" cy="19" r="1.8" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="chat">
+      <div class="stack" id="stack">
+
+        <div class="chip">Hoy</div>
+        <div class="chip ctx">Tokyo, día 4 de 12 · 18 °C con lluvia</div>
+
+        <div class="b me">¿Qué puedo hacer ahora?
+          <span class="t">16:09 <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="#53bdeb"
+              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 6l3 3 6.5-7.5M6 8.5l1 .8L14 1.8" />
+            </svg></span>
+        </div>
+
+        <div class="b bot">Tenés 3 horas libres hasta tu próxima actividad.<span class="t">16:10</span></div>
+
+        <div class="b me">Está lloviendo y no quiero caminar mucho.
+          <span class="t">16:10 <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="#53bdeb"
+              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 6l3 3 6.5-7.5M6 8.5l1 .8L14 1.8" />
+            </svg></span>
+        </div>
+
+        <div class="b bot">Con lluvia, mejor algo bajo techo y cerca de donde estás.<span class="t">16:10</span></div>
+
+        <div class="b bot card">
+          <div class="in">
+            <b>Mori Art Museum</b>
+            <div class="m">A 14 min · Entrada $2.000</div>
+            <p>Arte contemporáneo, con vista a la ciudad. Va con lo que te gusta.</p>
+            <span class="t">16:11</span>
+          </div>
+          <div class="btn">Ver lugar</div>
+          <div class="btn">Agregar al itinerario</div>
+        </div>
+
+        <div class="b me">Agregar al itinerario
+          <span class="t">16:11 <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="#53bdeb"
+              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 6l3 3 6.5-7.5M6 8.5l1 .8L14 1.8" />
+            </svg></span>
+        </div>
+
+        <div class="b bot">Listo, agregué el Mori Art Museum a hoy, 16:30 ✅<span class="t">16:11</span></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <div class="fld">Mensaje</div>
+      <div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"
+          stroke-linecap="round" aria-hidden="true">
+          <rect x="9" y="3" width="6" height="11" rx="3" />
+          <path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21" />
+        </svg></div>
+    </div>
+  </div>
+
+  <script>
+    // Si el chat no entra en el alto disponible, se achica un poco en vez de cortarse
+    function fit() {
+      var chat = document.querySelector('.chat'), s = document.getElementById('stack');
+      s.style.zoom = 1;
+      var avail = chat.clientHeight - 24, need = s.scrollHeight;
+      if (need > avail) s.style.zoom = Math.max(.6, avail / need);
+    }
+    addEventListener('load', fit);
+    addEventListener('resize', fit);
+    new ResizeObserver(fit).observe(document.querySelector('.chat'));
+  </script>
+</body>
+
+</html>
