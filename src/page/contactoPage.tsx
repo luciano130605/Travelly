@@ -8,11 +8,9 @@ import { ChevronDownIcon } from "@hugeicons/core-free-icons";
 const CONTACT_EMAIL = "hola@travelly.app";
 
 // TODO: poné acá la ruta del avatar de Travy (por ej. en /public)
-const TRAVY_AVATAR = "/travy.png";
 
 // Endpoint que recibe el formulario. Con Formspree: https://formspree.io/f/xxxxxxxx
 // Guardalo en .env como VITE_CONTACT_ENDPOINT
-const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT as string;
 
 type Status = "idle" | "sending" | "sent" | "error";
 

@@ -17,12 +17,6 @@ export default function CookieBanner() {
   const [isVisible, setIsVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [prefs, setPrefs] = useState<CookiePreferences>({
-    necessary: true,
-    analytics: false,
-    preferences: false,
-    marketing: false,
-  });
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -33,16 +27,9 @@ export default function CookieBanner() {
       return () => clearTimeout(timer);
     }
 
-    const parsed: CookiePreferences = JSON.parse(stored);
-    applyConsent(parsed);
   }, []);
 
-  const applyConsent = (preferences: CookiePreferences) => {
-    // Aquí activas/desactivas tus scripts reales
-    // if (preferences.analytics) loadGoogleAnalytics();
-    // if (preferences.marketing) loadMarketingPixels();
-    // if (preferences.preferences) enableTravyPersonalization();
-  };
+
 
   const saveConsent = (preferences: CookiePreferences) => {
     const data = {
@@ -52,7 +39,6 @@ export default function CookieBanner() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    applyConsent(preferences);
     setIsVisible(false);
     setIsModalOpen(false);
   };
@@ -75,9 +61,7 @@ export default function CookieBanner() {
     });
   };
 
-  const handleSavePreferences = () => {
-    saveConsent(prefs);
-  };
+ 
 
   if (!isVisible && !isModalOpen) return null;
 

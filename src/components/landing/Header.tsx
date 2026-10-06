@@ -1,5 +1,3 @@
-import { Moon02Icon, Sun01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
