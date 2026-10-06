@@ -196,7 +196,7 @@ export default function Header() {
           className="group flex items-center gap-2.5 justify-self-start"
         >
           <img
-            src="../../src/assets/travy.png"
+            src="/demo/travy.png"
             alt=""
             width={30}
             height={30}

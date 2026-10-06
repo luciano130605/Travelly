@@ -7,11 +7,34 @@
   <title>Travelly · Demo</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../src/index.css">
   <style>
     * {
       box-sizing: border-box;
       margin: 0
+    }
+
+    :root {
+      --bg: #faf8f5;
+      --tx: #1a1a18;
+      --g1: #6b6a65;
+      --g2: #8a8881;
+      --ln: rgba(26, 26, 24, 0.13);
+      --pn: #ffffff;
+      --ac: #2547e8;
+      --ink-d: #1c130d;
+      --ink2: rgba(28, 19, 13, 0.12);
+
+      --gr:
+        radial-gradient(80% 70% at 0% 0%,
+          rgba(37, 71, 232, 0.10) 0%,
+          transparent 65%),
+        radial-gradient(70% 60% at 100% 45%,
+          rgba(240, 238, 234, 0.9) 0%,
+          transparent 70%),
+        linear-gradient(135deg,
+          #faf8f5 0%,
+          #f0eeea 100%);
+
     }
 
     html,
@@ -730,7 +753,7 @@
 <body>
   <div id="stage" class="land">
     <div id="lines">
-      <img id="lg" class="logo fade" src="../../src/assets/travy.png" alt="">
+      <img id="lg" class="logo fade" src="/travy.png" alt="">
       <p id="l1" class="fade"></p>
       <p id="l2" class="d fade"></p>
       <div class="s fade" id="l3"></div>
@@ -743,7 +766,7 @@
           <div id="toast"><i></i><span id="tt"></span></div>
           <div id="hd">
             <div class="brand">
-              <img src="../../src/assets/travy-sm.png" alt="">
+              <img src="../travy-sm.png" alt="">
               <div>
                 <b>Travy</b>
                 <div class="on"><i></i>En línea</div>
@@ -835,7 +858,7 @@
     }
     const say = (h, c) => add(h, c);
     async function think(ms) {
-      const k = add('<div class="think"><img src="../../src/assets/travy-chat.png" alt="">Travy está revisando tu viaje…</div>');
+      const k = add('<div class="think"><img src="../travy-chat.png" alt="">Travy está revisando tu viaje…</div>');
       await sleep(ms); k.remove()
 
     }
