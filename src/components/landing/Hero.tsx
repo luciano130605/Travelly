@@ -1,5 +1,10 @@
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { useEffect, useId, useState, type FormEvent } from "react"
+
+type Status = "idle" | "loading" | "success" | "error"
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+
 
 export default function Hero() {
   const [theme, setTheme] = useState<"light" | "dark">("light")
@@ -7,9 +12,7 @@ export default function Hero() {
   useEffect(() => {
     const updateTheme = () => {
       setTheme(
-        document.documentElement.dataset.theme === "dark"
-          ? "dark"
-          : "light",
+        document.documentElement.dataset.theme === "dark" ? "dark" : "light",
       )
     }
 
@@ -27,8 +30,40 @@ export default function Hero() {
 
   const DEMO_SRC = `/demo/Travelly-Videodemo.html?v=3&theme=${theme}`
 
+  /* ---------- Lista de espera ---------- */
+  const uid = useId()
+  const inputId = `${uid}-email`
+  const msgId = `${uid}-msg`
+
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<Status>("idle")
+  const [error, setError] = useState("")
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (status === "loading") return
+
+    const value = email.trim()
+
+    if (!EMAIL_RE.test(value)) {
+      setStatus("error")
+      setError("Revisá el mail, parece que le falta algo.")
+      return
+    }
+
+    setStatus("loading")
+    setError("")
+
+    // Simulado: no se guarda nada.
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    setStatus("success")
+  }
+
   return (
     <section
+      id="lista-de-espera"
       className="
         wrap
         grid
@@ -80,69 +115,148 @@ export default function Hero() {
         </p>
 
         <div className="mt-8 w-full max-w-[600px] sm:mt-10">
-          <form
-            className="
-              flex
-              w-full
-              flex-col
-              gap-2
-              rounded-[24px]
-              border
-              border-line
-              bg-mist
-              p-2
-              shadow-sm
-              sm:h-16
-              sm:flex-row
-              sm:items-center
-              sm:rounded-full
-              sm:p-1.5
-            "
-          >
-            <input
-              type="text"
-              placeholder="¿A dónde vas?"
-              aria-label="Destino del viaje"
-              className="
-                min-h-12
-                min-w-0
-                flex-1
-                rounded-full
-                bg-transparent
-                px-5
-                text-base
-                text-ink
-                outline-none
-                placeholder:text-soft
-                sm:min-h-0
-                sm:px-6
-              "
-            />
-
-            <Link
-              to="registro"
+          {status === "success" ? (
+            <div
+              role="status"
               className="
                 flex
-                min-h-12
-                w-full
-                shrink-0
                 items-center
-                justify-center
-                rounded-full
-               btn-primary
-                sm:h-full
-                sm:min-h-0
-                sm:w-auto
-                sm:px-7
+                gap-4
+                rounded-[24px]
+                border
+                border-line
+                bg-mist
+                px-4
+                py-4
+                shadow-sm
+                sm:gap-5
+                sm:px-6
+                sm:py-5
               "
             >
-              Empezar a planificar
-            </Link>
-          </form>
+             <img src="/travy-email.png" alt="Travy" className="h-16 w-16 shrink-0 rounded-full" />
 
-          <p className="mt-3 px-4 text-sm text-soft sm:px-5">
-            Organizá tu viaje y conocé a Travy.
-          </p>
+              <div className="min-w-0">
+                <p className="text-base font-semibold text-ink sm:text-lg">
+                  Ya estás en la lista de espera.
+                </p>
+
+                <p className="mt-1 text-sm leading-relaxed text-soft sm:text-base">
+                  Te escribiremos a{" "}
+                  <span className="break-all font-medium text-ink">
+                    {email.trim()}
+                  </span>{" "}
+                  cuando sea tu turno.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <form
+              onSubmit={onSubmit}
+              noValidate
+              className="
+                flex
+                w-full
+                flex-col
+                gap-2
+                rounded-[24px]
+                border
+                border-line
+                bg-mist
+                p-2
+                shadow-sm
+                sm:h-16
+                sm:flex-row
+                sm:items-center
+                sm:rounded-full
+                sm:p-1.5
+              "
+            >
+              <label htmlFor={inputId} className="sr-only">
+                Tu mail
+              </label>
+
+              <input
+                id={inputId}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="tu@mail.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+
+                  if (status === "error") {
+                    setStatus("idle")
+                  }
+                }}
+                aria-invalid={status === "error"}
+                aria-describedby={msgId}
+                disabled={status === "loading"}
+                className="
+                  min-h-12
+                  min-w-0
+                  flex-1
+                  rounded-full
+                  bg-transparent
+                  px-5
+                  text-base
+                  text-ink
+                  outline-none
+                  placeholder:text-soft
+                  disabled:opacity-60
+                  sm:min-h-0
+                  sm:px-6
+                "
+              />
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                aria-busy={status === "loading"}
+                className="
+                  btn-primary
+                  flex
+                  min-h-12
+                  w-full
+                  shrink-0
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-full
+                  disabled:opacity-60
+                  sm:h-full
+                  sm:min-h-0
+                  sm:w-auto
+                  sm:px-7
+                "
+              >
+                {status === "loading" ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="h-4 w-4 rounded-full border-2 border-current border-t-transparent motion-safe:animate-spin"
+                    />
+                    Enviando…
+                  </>
+                ) : (
+                  "Quiero probar Travelly"
+                )}
+              </button>
+            </form>
+          )}
+
+          {status !== "success" && (
+            <p
+              id={msgId}
+              role={status === "error" ? "alert" : undefined}
+              className="mt-3 min-h-5 px-4 text-sm text-soft sm:px-5"
+            >
+              {status === "error"
+                ? error
+                : "Estamos armando Travelly. Dejá tu mail y sé de los primeros en probarlo."}
+            </p>
+          )}
         </div>
       </div>
 

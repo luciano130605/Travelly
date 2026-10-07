@@ -1,4 +1,11 @@
-import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from 'react'
 
 type CSSVars = CSSProperties & Record<`--${string}`, string>
 
@@ -13,53 +20,154 @@ type Column = {
   title: string
   rows: Row[]
   note: string
+  source?: string
+}
+
+type Destination = {
+  id: string
+  name: string
+  columns: Column[]
 }
 
 const EASE = 'cubic-bezier(.22,1,.36,1)'
+const VERIFIED = 'Fuente: sitio oficial · Verificado en septiembre 2026'
 
-const COLUMNS: Column[] = [
+// Datos de ejemplo pensados para un pasaporte argentino.
+// Verificá cada dato con la fuente oficial antes de publicar.
+const DESTINATIONS: Destination[] = [
   {
-    id: 'requisitos',
-    title: 'Requisitos · Japón',
-    rows: [
-      { label: 'Visa', value: 'No requerida*' },
-      { label: 'Pasaporte', value: 'Vigente durante toda la estadía' },
-      { label: 'Vacunas', value: 'Sin exigencias generales*' },
-      { label: 'Fondos', value: 'Pueden pedirte comprobarlos' },
+    id: 'japon',
+    name: 'Japón',
+    columns: [
+      {
+        id: 'requisitos',
+        source: VERIFIED,
+        title: 'Requisitos · Japón',
+        rows: [
+          { label: 'Visa', value: 'No requerida*' },
+          { label: 'Pasaporte', value: 'Vigente durante toda la estadía' },
+          { label: 'Vacunas', value: 'Sin exigencias generales*' },
+          { label: 'Fondos', value: 'Pueden pedirte comprobarlos' },
+        ],
+        note: '* Los requisitos cambian según tu nacionalidad y la fecha. Verificá siempre la información oficial antes de viajar.',
+      },
+      {
+        id: 'dinero',
+        title: 'Dinero y pagos',
+        rows: [
+          { label: 'Moneda', value: 'Yen (JPY ¥)' },
+          { label: 'Tarjetas', value: 'Visa y Mastercard, casi siempre' },
+          { label: 'Efectivo', value: 'Templos, mercados y locales chicos' },
+          { label: 'Presupuesto', value: '¥12.000 a ¥18.000 por día' },
+        ],
+        note: 'El presupuesto es una estimación sin vuelos ni alojamiento. Ajustalo a tu estilo de viaje.',
+      },
+      {
+        id: 'traslados',
+        title: 'Desde tu alojamiento',
+        rows: [
+          { label: 'Metro', value: '¥220', meta: '18 min' },
+          { label: 'Bus', value: '¥210', meta: '26 min' },
+          { label: 'Taxi', value: '¥2.400', meta: '12 min' },
+        ],
+        note: 'Cada opción te muestra el precio, la duración, cómo se paga y cómo llegar paso a paso.',
+      },
     ],
-    note: '* Los requisitos cambian según tu nacionalidad y la fecha. Verificá siempre la información oficial antes de viajar.',
   },
   {
-    id: 'dinero',
-    title: 'Dinero y pagos',
-    rows: [
-      { label: 'Moneda', value: 'Yen (JPY ¥)' },
-      { label: 'Tarjetas', value: 'Visa y Mastercard, casi siempre' },
-      { label: 'Efectivo', value: 'Templos, mercados y locales chicos' },
-      { label: 'Presupuesto', value: '¥12.000 a ¥18.000 por día' },
+    id: 'portugal',
+    name: 'Portugal',
+    columns: [
+      {
+        id: 'requisitos',
+        source: VERIFIED,
+        title: 'Requisitos · Portugal',
+        rows: [
+          { label: 'Visa', value: 'No requerida hasta 90 días*' },
+          { label: 'Pasaporte', value: 'Vigente 3 meses después de tu salida' },
+          { label: 'Vacunas', value: 'Sin exigencias generales*' },
+          { label: 'Fondos', value: 'Pueden pedirte comprobarlos' },
+        ],
+        note: '* Los requisitos cambian según tu nacionalidad y la fecha. Puede sumarse una autorización electrónica para el espacio Schengen. Verificá siempre la información oficial antes de viajar.',
+      },
+      {
+        id: 'dinero',
+        title: 'Dinero y pagos',
+        rows: [
+          { label: 'Moneda', value: 'Euro (EUR €)' },
+          { label: 'Tarjetas', value: 'Visa y Mastercard, casi siempre' },
+          { label: 'Efectivo', value: 'Mercados, cafés chicos y propinas' },
+          { label: 'Presupuesto', value: '€70 a €120 por día' },
+        ],
+        note: 'El presupuesto es una estimación sin vuelos ni alojamiento. Ajustalo a tu estilo de viaje.',
+      },
+      {
+        id: 'traslados',
+        title: 'Desde tu alojamiento',
+        rows: [
+          { label: 'Metro', value: '€1,85', meta: '20 min' },
+          { label: 'Bus', value: '€2,00', meta: '30 min' },
+          { label: 'Taxi', value: '€15', meta: '15 min' },
+        ],
+        note: 'Cada opción te muestra el precio, la duración, cómo se paga y cómo llegar paso a paso.',
+      },
     ],
-    note: 'El presupuesto es una estimación sin vuelos ni alojamiento. Ajustalo a tu estilo de viaje.',
   },
   {
-    id: 'traslados',
-    title: 'Desde tu alojamiento',
-    rows: [
-      { label: 'Metro', value: '¥220', meta: '18 min' },
-      { label: 'Bus', value: '¥210', meta: '26 min' },
-      { label: 'Taxi', value: '¥2.400', meta: '12 min' },
+    id: 'mexico',
+    name: 'México',
+    columns: [
+      {
+        id: 'requisitos',
+        source: VERIFIED,
+        title: 'Requisitos · México',
+        rows: [
+          { label: 'Visa', value: 'No requerida en estadías cortas*' },
+          { label: 'Pasaporte', value: 'Vigente durante toda la estadía' },
+          { label: 'Vacunas', value: 'Sin exigencias generales*' },
+          { label: 'Fondos', value: 'Pueden pedirte comprobarlos' },
+        ],
+        note: '* Los requisitos cambian según tu nacionalidad y la fecha. Pueden pedirte pasaje de regreso y reserva de alojamiento al ingresar. Verificá siempre la información oficial antes de viajar.',
+      },
+      {
+        id: 'dinero',
+        title: 'Dinero y pagos',
+        rows: [
+          { label: 'Moneda', value: 'Peso mexicano (MXN MX$)' },
+          { label: 'Tarjetas', value: 'Visa y Mastercard, casi siempre' },
+          { label: 'Efectivo', value: 'Mercados, taquerías y transporte local' },
+          { label: 'Presupuesto', value: 'MX$1.500 a MX$3.000 por día' },
+        ],
+        note: 'El presupuesto es una estimación sin vuelos ni alojamiento. Ajustalo a tu estilo de viaje.',
+      },
+      {
+        id: 'traslados',
+        title: 'Desde tu alojamiento',
+        rows: [
+          { label: 'Metro', value: 'MX$5', meta: '25 min' },
+          { label: 'Metrobús', value: 'MX$6', meta: '35 min' },
+          { label: 'Taxi', value: 'MX$180', meta: '20 min' },
+        ],
+        note: 'Cada opción te muestra el precio, la duración, cómo se paga y cómo llegar paso a paso.',
+      },
     ],
-    note: 'Cada opción te muestra el precio, la duración, cómo se paga y cómo llegar paso a paso.',
   },
 ]
 
 export default function Functions() {
   const uid = useId()
   const titleId = `${uid}-title`
+  const panelId = `${uid}-panel`
 
   const ref = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [shown, setShown] = useState(false)
   const [active, setActive] = useState(0)
+  const [destIndex, setDestIndex] = useState(0)
+
+  const dest = DESTINATIONS[destIndex]
+  const columns = dest.columns
 
   useEffect(() => {
     const el = ref.current
@@ -101,13 +209,34 @@ export default function Functions() {
     const step = getStep()
     if (!track || !step) return
     const i = Math.round(track.scrollLeft / step)
-    setActive(Math.min(COLUMNS.length - 1, Math.max(0, i)))
+    setActive(Math.min(columns.length - 1, Math.max(0, i)))
   }
 
   const goTo = (i: number) => {
     const track = trackRef.current
     if (!track) return
     track.scrollTo({ left: i * getStep(), behavior: 'smooth' })
+  }
+
+  const selectDest = (i: number) => {
+    if (i === destIndex) return
+    setDestIndex(i)
+    setActive(0)
+    // Al cambiar de destino, el carrusel mobile vuelve a la primera columna.
+    trackRef.current?.scrollTo({ left: 0 })
+  }
+
+  const onTabKey = (e: ReactKeyboardEvent<HTMLButtonElement>, i: number) => {
+    const last = DESTINATIONS.length - 1
+    let next = i
+    if (e.key === 'ArrowRight') next = i === last ? 0 : i + 1
+    else if (e.key === 'ArrowLeft') next = i === 0 ? last : i - 1
+    else if (e.key === 'Home') next = 0
+    else if (e.key === 'End') next = last
+    else return
+    e.preventDefault()
+    selectDest(next)
+    tabRefs.current[next]?.focus()
   }
 
   return (
@@ -169,7 +298,49 @@ export default function Functions() {
         </div>
 
         <div
+          role="tablist"
+          aria-label="Destino"
+          className="fn-i mt-8 flex flex-wrap items-center gap-2"
+          style={{ '--d': '50ms' } as CSSVars}
+        >
+          {DESTINATIONS.map((d, i) => {
+            const selected = i === destIndex
+            return (
+              <button
+                key={d.id}
+                ref={el => {
+                  tabRefs.current[i] = el
+                }}
+                id={`${uid}-tab-${d.id}`}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                aria-controls={panelId}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => selectDest(i)}
+                onKeyDown={e => onTabKey(e, i)}
+                className={[
+                  'chip',
+                  selected
+                    ? 'text-paper bg-ink'
+                    : '',
+                ].join(' ')}
+              >
+                {d.name}
+              </button>
+            )
+          })}
+
+          <span className="px-2 text-sm text-soft">
+            Son solo ejemplos · hay muchos más destinos
+          </span>
+        </div>
+
+        <div
           ref={trackRef}
+          id={panelId}
+          role="tabpanel"
+          aria-labelledby={`${uid}-tab-${dest.id}`}
           onScroll={handleScroll}
           className="
     fn-track
@@ -196,16 +367,18 @@ export default function Functions() {
     lg:gap-x-12
   "
         >
-          {COLUMNS.map((col, i) => (
+          {columns.map((col, i) => (
             <div
-              key={col.id}
+              // La key incluye el destino: al cambiar, las columnas se
+              // remontan y vuelven a entrar con la animación escalonada.
+              key={`${dest.id}-${col.id}`}
               role="group"
               aria-labelledby={`${uid}-${col.id}`}
               className={[
                 'fn-i',
                 'w-full min-w-full shrink-0 snap-start snap-always',
                 'sm:w-auto sm:min-w-0 sm:shrink sm:snap-align-none',
-                i === COLUMNS.length - 1
+                i === columns.length - 1
                   ? 'sm:col-span-2 lg:col-span-1'
                   : '',
               ].join(' ')}
@@ -279,7 +452,16 @@ export default function Functions() {
               <p className="mt-4 max-w-md text-xs leading-relaxed text-soft sm:text-sm">
                 {col.note}
               </p>
+
+              {col.source && (
+                <p className="mt-2 max-w-md text-xs font-medium text-soft sm:text-sm">
+                  {col.source}
+                </p>
+              )}
             </div>
+
+
+
           ))}
         </div>
 
@@ -288,7 +470,7 @@ export default function Functions() {
           role="tablist"
           aria-label="Secciones"
         >
-          {COLUMNS.map((col, i) => (
+          {columns.map((col, i) => (
             <button
               key={col.id}
               type="button"

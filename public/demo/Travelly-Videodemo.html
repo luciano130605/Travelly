@@ -753,7 +753,7 @@
 <body>
   <div id="stage" class="land">
     <div id="lines">
-      <img id="lg" class="logo fade" src="/travy.png" alt="">
+      <img id="lg" class="logo fade" src="travy.png" alt="">
       <p id="l1" class="fade"></p>
       <p id="l2" class="d fade"></p>
       <div class="s fade" id="l3"></div>
@@ -866,7 +866,6 @@
 
     async function main() {
       await sleep(300); W.style.opacity = 1; await sleep(1000);
-
       // Escena A — crear el viaje
       await user('Quiero armar un viaje a Tokio del 12 al 24 de septiembre.');
       await think(900);
@@ -914,7 +913,7 @@
       // Escena 6 — cierre
       $('#screen').classList.add('off'); await sleep(900);
       ph(.9); W.style.opacity = 0; await sleep(900);
-      show('#lg', 1); await sleep(500);   // <- nuevo
+      show('#lg', 1); await sleep(500);   
       $('#l1').textContent = 'No necesitás buscar.'; show('#l1', 1); await sleep(1300);
       $('#l2').textContent = 'Solo preguntale a Travy.'; show('#l2', 1); await sleep(2200);
       show('#l1', 0); show('#l2', 0); await sleep(1000);   // el logo se queda

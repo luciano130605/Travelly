@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Travy · Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0b09;--tx:#f4f1ec;--g1:#a8a39b;--g2:#6f6a63;--ln:#26231f;--pn:#161411;--ac:#4c9aff;--wa:#25d366;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%;background:#f0eeea;font-family:Geist,system-ui,-apple-system,Arial,sans-serif;color:var(--tx)}
+body{display:grid;place-items:center;padding:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.app{width:100%;max-width:880px;border:1px solid var(--ln);border-radius:24px;background:var(--bg);overflow:hidden;display:grid;grid-template-columns:1fr 20rem}
+.chat{display:flex;flex-direction:column;height:36rem;min-width:0}
+.hd{padding:16px 20px 14px;border-bottom:1px solid var(--ln)}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:50%;background:var(--ac);color:#06121f;display:grid;place-items:center;font-weight:600}
+.brand b{font-size:17px;font-weight:600;display:block}
+.brand small{font-size:12px;color:var(--g1);display:flex;align-items:center;gap:6px}
+.brand small i{width:6px;height:6px;border-radius:50%;background:var(--ac)}
+.pills{margin-top:10px;min-height:28px;display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--g1)}
+.pills span{border:1px solid #2f2b26;border-radius:99px;padding:5px 12px}
+#log{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column}
+#in{margin-top:auto;display:flex;flex-direction:column;gap:14px}
+#in>*{animation:m .35s both}
+@keyframes m{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.u{align-self:flex-end;max-width:82%;background:#25221e;padding:10px 14px;border-radius:18px 18px 6px 18px;font-size:14.5px}
+.t{font-size:15px;line-height:1.4;max-width:92%}
+.th{font-size:13px;color:var(--g1)}
+.card{border:1px solid var(--ln);background:var(--pn);border-radius:16px;padding:14px}
+.card .n{font-size:12px;letter-spacing:.08em;font-weight:500}
+.card .m{margin-top:6px;font-size:13px;color:var(--g1)}
+.rw{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0 10px 12px;border-bottom:1px solid var(--ln);font-size:14px;color:var(--g1);position:relative;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.rw:last-child{border-bottom:0}
+.rw small{font-size:12.5px}
+.rw.on{color:var(--tx)}
+.rw.on:before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:2px;background:var(--ac);border-radius:2px}
+.btns{display:flex;gap:8px;margin-top:12px}
+.b{flex:1;min-height:44px;border:1px solid #38342e;background:none;border-radius:11px;font-size:12.5px;font-weight:500}
+.b.p{background:var(--ac);border-color:var(--ac);color:#06121f}
+.b.p:disabled{background:none;color:var(--ac)}
+.ft{padding:8px 16px 16px}
+.hint{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--g2);margin-bottom:8px}
+.hint button{border:1px solid #2f2b26;background:none;border-radius:99px;padding:5px 12px;font-size:12.5px;color:var(--g1)}
+.ph{display:flex;flex-direction:column;gap:8px;min-height:44px}
+.ph button{min-height:44px;text-align:left;border:1px solid rgba(76,154,255,.6);background:none;border-radius:16px;padding:8px 16px;font-size:13.5px}
+.ph button.sel{background:rgba(76,154,255,.15);border-color:var(--ac)}
+.ph button:disabled{opacity:.4}
+.cmp{margin-top:8px;height:44px;border:1px solid #2f2b26;border-radius:99px;display:flex;align-items:center;padding:0 6px 0 16px;gap:8px;font-size:14px;color:var(--g2)}
+.cmp span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp.on{border-color:#4a453e}.cmp.on span{color:var(--tx)}
+.cmp button{width:32px;height:32px;border-radius:50%;border:0;background:#25221e;color:var(--g2)}
+.cmp.on button{background:var(--ac);color:#06121f}
+.wa{margin-top:10px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:99px;background:var(--wa);color:#06210f;font-weight:600;font-size:14px;text-decoration:none}
+.wa:hover{filter:brightness(1.06)}
+aside{border-left:1px solid #2f2b26;background:var(--pn);padding:20px;overflow-y:auto;height:36rem}
+aside h4{font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+aside h4 small{font-size:12px;color:var(--g2);font-weight:400}
+.empty{height:100%;display:grid;place-content:center;text-align:center;font-size:13px;color:var(--g1)}
+.empty b{display:block;color:var(--tx);font-size:14px;font-weight:500;margin-bottom:4px}
+.pr{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--ln);font-size:14px;color:var(--g1)}
+.pr span{width:44px;color:var(--g2);font-variant-numeric:tabular-nums}
+.pr.n{color:var(--tx);animation:m .5s both}.pr.n span{color:var(--ac)}
+.modes{display:flex;gap:8px;margin-top:8px}
+.modes button{flex:1;min-height:40px;border:1px solid #38342e;background:none;border-radius:99px;font-size:12.5px;color:var(--g1)}
+.modes button.on{border-color:var(--ac);color:var(--ac)}
+.rt{stroke-dasharray:1;stroke-dashoffset:1;animation:r 1.2s forwards}
+@keyframes r{to{stroke-dashoffset:0}}
+.inf{margin-top:10px;border-top:1px solid var(--ln);padding-top:12px;display:flex;justify-content:space-between;font-size:15px}
+.inf small{display:block;font-size:13px;color:var(--g1)}
+@media(max-width:820px){.app{grid-template-columns:1fr}aside{height:auto;max-height:22rem;border-left:0;border-top:1px solid #2f2b26}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+.cmp input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--tx);font:inherit;font-size:14px}
+.cmp input::placeholder{color:var(--g2)}
+.cmp:focus-within{border-color:#4a453e}
+.cmp button:disabled{cursor:default}
+.rsr{display:flex;justify-content:flex-end;margin-top:8px}
+.rsr button{border:1px solid #2f2b26;background:none;border-radius:99px;padding:5px 12px;font-size:12.5px;color:var(--g1)}
+.u,.t{white-space:pre-wrap;overflow-wrap:anywhere}
+.err{color:var(--g1)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="chat">
+    <div class="hd">
+      <div class="brand"><div class="logo">T</div><div><b>Travy</b><small><i></i>En línea</small></div></div>
+      <div class="pills" id="pills"><span style="border-color:transparent;padding-left:0">Nuevo viaje</span></div>
+    </div>
+    <div id="log" role="log" aria-live="polite"><div id="in"><div class="t">Hola, soy Travy. Elegí qué decirme y armamos tu viaje.</div></div></div>
+    <div class="ft">
+      <div class="ph" id="ph"></div>
+      <form class="cmp" id="cmp" autocomplete="off">
+        <input id="ti" type="text" maxlength="500" placeholder="Preguntale a Travy" aria-label="Mensaje para Travy" enterkeyhint="send">
+        <button id="snd" type="submit" aria-label="Enviar mensaje" disabled>&uarr;</button>
+      </form>
+      <div class="rsr"><button id="rs" type="button">Empezar de nuevo</button></div>
+      <a class="wa" id="wa" target="_blank" rel="noopener noreferrer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.6-5A9 9 0 1 1 8 19.400L3 21z"/><path d="M9 9.500c.5 2.500 3 5 5.500 5.500l1.200-1.300-2-1-.9.700c-.8-.3-1.800-1.300-2.100-2.100l.7-.9-1-2L9 9.500z"/></svg>
+        Hablar con Travy por WhatsApp
+      </a>
+    </div>
+  </div>
+  <aside id="pn" aria-label="Detalle del viaje"></aside>
+</div>
+<script>
+// Endpoint que habla con Claude (api/travy.ts). Si este HTML vive en otro dominio, poné la URL completa (y habilitá CORS).
+const API = "/api/travy";
+// Reemplazá por tu número en formato internacional, sin + ni espacios
+const WA_NUMBER = "5491100000000";
+const WA_TEXT = "Hola Travy, quiero armar mi viaje";
+document.getElementById("wa").href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(WA_TEXT);
+
+const $ = s => document.querySelector(s);
+const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const SUG = ["Quiero armar un viaje a Tokio del 12 al 24 de septiembre.", "Está lloviendo y no quiero caminar mucho, ¿qué hago?", "¿Cómo vuelvo al hotel desde el museo?"];
+const PATHS = {
+  metro: {d: "M70 60H140V130H230V210H270", st: [[140,60],[140,130],[230,130],[230,210]]},
+  bus: {d: "M70 60V210H150V270H270V210", st: [[70,130],[150,210],[150,270],[210,270]]},
+  walk: {d: "M70 60L110 110L180 140L230 180L270 210", st: [], dots: 1},
+  taxi: {d: "M70 60V110H180V210H270", st: []}};
+const GREET = "Hola, soy Travy. Contame a dónde vas y armamos tu viaje.";
+let trip, plan, place, routes, mode, added, busy, hist, ctl;
+const log = $("#in");
+
+const add = (h, c) => { const d = document.createElement("div"); if (c) d.className = c; d.innerHTML = h; log.appendChild(d); $("#log").scrollTo({top: 1e6, behavior: "smooth"}); return d };
+
+/* ---- panel ---- */
+function emptyPanel(){ $("#pn").innerHTML = '<div class="empty"><div><b>Tu viaje aparece acá</b>Pedile a Travy que lo arme.</div></div>' }
+function planPanel(){
+  const rows = plan.items.map(r => '<div class="pr' + (plan.fresh === r[0] + r[1] ? ' n' : '') + '"><span>' + esc(r[0]) + '</span>' + esc(r[1]) + '</div>').join("");
+  $("#pn").innerHTML = '<h4>' + esc(plan.title) + '<small>' + esc(plan.sub) + '</small></h4><div style="margin-top:8px">' + rows + '</div>';
+}
+function placePanel(p){
+  const rows = [["Desde donde estás", p.minutes ? p.minutes + " min" : ""], ["Entrada", p.price], ["Horario sugerido", p.time]].filter(r => r[1]);
+  $("#pn").innerHTML = '<h4>' + esc(p.name) + '<small>' + esc(p.area) + '</small></h4><div style="margin-top:8px">' + rows.map(r => '<div class="pr"><span style="width:auto;flex:1">' + esc(r[0]) + '</span><b style="color:var(--tx);font-weight:500">' + esc(r[1]) + '</b></div>').join("") + '</div>' + (p.why ? '<p style="margin-top:14px;font-size:12px;line-height:1.4;color:var(--g1)"><b style="color:var(--tx);font-weight:500">Travy lo marcó para vos.</b> ' + esc(p.why) + '</p>' : "");
+}
+function mapPanel(){
+  const o = routes.options[mode], p = PATHS[o.mode] || PATHS.metro;
+  $("#pn").innerHTML = '<svg viewBox="0 0 340 300" fill="none" role="img" aria-label="Mapa: ruta ' + esc(o.label.toLowerCase()) + ' de ' + esc(routes.from) + ' a ' + esc(routes.to) + ', ' + o.minutes + ' min" style="width:100%"><g stroke="#1f1c18"><path d="M0 50H340M0 130H340M0 210H340M0 290H340M60 0V300M140 0V300M230 0V300M300 0V300"/></g><path d="M-10 280C80 240 140 290 240 220S330 200 350 180" stroke="#1d2530" stroke-width="22" stroke-linecap="round"/><path class="rt" pathLength="1" d="' + p.d + '" stroke="#4c9aff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"' + (p.dots ? ' style="stroke-dasharray:.001 .02"' : '') + '/>' + p.st.map(q => '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="3.5" fill="#0d0b09" stroke="#4c9aff" stroke-width="2"/>').join("") + '<circle cx="70" cy="60" r="6" fill="#f4f1ec"/><circle cx="270" cy="210" r="6" fill="#4c9aff"/><text x="82" y="50" fill="#a8a39b" font-size="12">' + esc(routes.from) + '</text><text x="226" y="238" fill="#a8a39b" font-size="12">' + esc(routes.to) + '</text></svg><div class="modes">' + routes.options.map((x, i) => '<button data-i="' + i + '" class="' + (i === mode ? 'on' : '') + '">' + esc(x.label) + '</button>').join("") + '</div><div class="inf"><div>' + esc(o.label) + '<small>' + esc(routes.from) + ' → ' + esc(routes.to) + '</small></div><div style="text-align:right">' + o.minutes + ' min<small>' + esc(o.cost) + '</small></div></div>';
+  document.querySelectorAll(".modes [data-i]").forEach(b => b.onclick = () => { mode = +b.dataset.i; mapPanel(); markModes() });
+  markModes();
+}
+function markModes(){ document.querySelectorAll("#in [data-o]").forEach(b => b.classList.toggle("on", routes === b.closest(".rl")._r && +b.dataset.o === mode)) }
+
+/* ---- acciones ---- */
+function addToPlan(p, btn){
+  if (added.includes(p.name)) return;
+  added.push(p.name); const row = [p.time || "--:--", p.name];
+  plan = plan || {title: "Hoy", items: []};
+  plan.sub = "Plan actualizado"; plan.items = plan.items.concat([row]).sort((a, b) => a[0].localeCompare(b[0])); plan.fresh = row[0] + row[1];
+  btn.textContent = "Agregado"; btn.disabled = true; planPanel();
+}
+
+/* ---- tarjetas ---- */
+function tripCard(t){
+  $("#pills").innerHTML = '<span>' + esc(t.city) + ' · ' + esc(t.from) + ' — ' + esc(t.to) + '</span>';
+  const c = add('<div class="card"><div class="n">' + esc(String(t.city).toUpperCase()) + '</div><div class="m">' + esc(t.from) + ' — ' + esc(t.to) + (t.days ? ' · ' + esc(t.days) + ' días' : '') + '</div><div class="btns"><button class="b p">Organizar mi viaje</button></div></div>');
+  c.querySelector(".p").onclick = () => send("Organizá mi primer día.");
+}
+function placeCard(p){
+  const meta = [p.minutes ? p.minutes + " min" : "", p.price].filter(Boolean).join(" · ");
+  const c = add('<div class="card"><div class="n">' + esc(String(p.name).toUpperCase()) + '</div>' + (meta ? '<div class="m">' + esc(meta) + '</div>' : '') + (p.why ? '<div style="margin-top:8px;font-size:13px;line-height:1.35">' + esc(p.why) + '</div>' : '') + '<div class="btns"><button class="b" data-v>Ver lugar</button><button class="b p" data-a>Agregar al itinerario</button></div></div>');
+  c.querySelector("[data-v]").onclick = () => placePanel(p);
+  c.querySelector("[data-a]").onclick = e => addToPlan(p, e.currentTarget);
+}
+function routesCard(r){
+  const c = add(r.options.map((o, i) => '<button class="rw" data-o="' + i + '">' + esc(o.label) + '<small>' + o.minutes + ' min' + (o.cost ? ' · ' + esc(o.cost) : '') + '</small></button>').join(""), "rl");
+  c._r = r;
+  c.querySelectorAll("[data-o]").forEach(b => b.onclick = () => { routes = r; mode = +b.dataset.o; mapPanel() });
+}
+
+function apply(r){
+  if (r.text) add(esc(r.text), "t");
+  if (r.trip){ trip = r.trip; tripCard(r.trip) }
+  if (r.plan && Array.isArray(r.plan.items)){ plan = {title: r.plan.title || "Plan", sub: r.plan.sub || "Plan actualizado", items: r.plan.items}; planPanel() }
+  if (r.place){ place = r.place; placeCard(r.place) }
+  if (r.routes && r.routes.options && r.routes.options.length){ routes = r.routes; mode = 0; routesCard(r.routes) }
+}
+
+/* ---- envío de texto libre ---- */
+function setBusy(b){ busy = b; $("#ti").disabled = b; sync(); document.querySelectorAll("#ph button").forEach(x => x.disabled = b) }
+function sync(){ const ok = $("#ti").value.trim() && !busy; $("#snd").disabled = !ok; $("#cmp").classList.toggle("on", !!ok) }
+
+async function send(raw){
+  const text = (raw == null ? $("#ti").value : raw).trim();
+  if (!text || busy) return;
+  $("#ti").value = ""; $("#ph").innerHTML = ""; setBusy(true);
+  add(esc(text), "u");
+  const k = add('<span class="th">Travy está pensando…</span>');
+  ctl = new AbortController(); const my = ctl;
+  const h = hist.concat([{role: "user", content: text}]).slice(-12);
+  try {
+    const res = await fetch(API, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({messages: h, state: {trip, plan}}), signal: my.signal});
+    if (!res.ok) throw new Error(res.status);
+    const r = await res.json();
+    hist = h.concat([{role: "assistant", content: r.text || ""}]);
+    k.remove(); apply(r);
+  } catch (e) {
+    if (my.signal.aborted) return;
+    k.remove(); add("No pude responderte ahora. Probá de nuevo en un momento.", "t err");
+  } finally {
+    if (!my.signal.aborted){ setBusy(false); $("#ti").focus() }
+  }
+}
+
+function reset(){
+  if (ctl) ctl.abort();
+  trip = plan = place = routes = null; mode = 0; added = []; hist = []; busy = false;
+  log.innerHTML = '<div class="t">' + GREET + '</div>';
+  $("#pills").innerHTML = '<span style="border-color:transparent;padding-left:0">Nuevo viaje</span>';
+  $("#ph").innerHTML = ""; SUG.forEach(t => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.onclick = () => send(t); $("#ph").appendChild(b) });
+  $("#ti").value = ""; setBusy(false); emptyPanel();
+}
+$("#cmp").onsubmit = e => { e.preventDefault(); send() };
+$("#ti").oninput = sync;
+$("#rs").onclick = reset;
+reset();
+</script>
+</body>
+</html>

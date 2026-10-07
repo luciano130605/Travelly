@@ -5,13 +5,13 @@ import {
   Profile,
   Packing,
   Travy,
-  CallToAction,
   Footer,
 } from '../components/landing'
 import Functions from '../components/landing/Functions'
 import Header from '../components/landing/Header'
 import Trip from '../components/landing/Trip'
 import Cookies from '../components/cookies'
+import SocialProof from '../components/landing/SocialProof'
 
 export default function LandingPage() {
   return (
@@ -27,8 +27,8 @@ export default function LandingPage() {
         <Packing />
         <Functions />
         <Trip />
+        <SocialProof />
         <Travy />
-        <CallToAction /> 
       </main>
       <Footer />
     </div>
