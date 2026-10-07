@@ -21,9 +21,7 @@ type Profile = {
     company?: (typeof COMPANY)[number];
 };
 
-const chip = (on: boolean) =>
-    `rounded-full border px-4 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acc ${on ? "border-acc bg-acc text-white" : "border-line text-soft hover:border-soft hover:text-ink"
-    }`;
+
 
 function Choice<T extends string>({
     label, options, value, onChange,

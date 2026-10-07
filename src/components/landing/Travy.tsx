@@ -3,13 +3,13 @@ import { useId, useState, type KeyboardEvent } from 'react'
 import TravyApp from './TravyApp'
 import TravyWhatsApp from './TravyWhatsApp'
 
-const WA_NUMBER = '5491100000000'
+// const WA_NUMBER = '5491100000000'
 
-const WA_TEXT = 'Hola Travy, quiero armar mi viaje'
+// const WA_TEXT = 'Hola Travy, quiero armar mi viaje'
 
-const WA_URL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
-  WA_TEXT,
-)}`
+// const WA_URL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+//   WA_TEXT,
+// )}`
 
 const TABS = [
   { id: 'app', label: 'En la app' },

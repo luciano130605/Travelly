@@ -14,9 +14,9 @@ import {
 
 const DEMO_URL = '/demo/whatsapp-demo.html'
 
-const WA_NUMBER = '5491100000000'
+// const WA_NUMBER = '5491100000000'
 
-const WA_TEXT = 'Hola Travy, quiero armar mi viaje'
+// const WA_TEXT = 'Hola Travy, quiero armar mi viaje'
 
 export default function WhatsAppButton() {
   const [open, setOpen] = useState(false)
@@ -49,9 +49,9 @@ export default function WhatsAppButton() {
     }
   }, [open])
 
-  const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
-    WA_TEXT,
-  )}`
+  // const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+  //   WA_TEXT,
+  // )}`
 
   return (
     <div
