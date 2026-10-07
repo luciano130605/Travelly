@@ -1,10 +1,11 @@
 import { useEffect, useId, useState, type FormEvent } from "react"
+import { addToWaitlist } from "../../lib/api"
 
-type Status = "idle" | "loading" | "success" | "error"
+type Status = "idle" | "loading" | "success" | "already" | "error"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function Hero() {
   const [theme, setTheme] = useState<"light" | "dark">("light")
@@ -12,7 +13,9 @@ export default function Hero() {
   useEffect(() => {
     const updateTheme = () => {
       setTheme(
-        document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+        document.documentElement.dataset.theme === "dark"
+          ? "dark"
+          : "light",
       )
     }
 
@@ -30,7 +33,7 @@ export default function Hero() {
 
   const DEMO_SRC = `/demo/Travelly-Videodemo.html?v=3&theme=${theme}`
 
-  /* ---------- Lista de espera ---------- */
+
   const uid = useId()
   const inputId = `${uid}-email`
   const msgId = `${uid}-msg`
@@ -38,13 +41,12 @@ export default function Hero() {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<Status>("idle")
   const [error, setError] = useState("")
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (status === "loading") return
 
-    const value = email.trim()
+    const value = email.trim().toLowerCase()
 
     if (!EMAIL_RE.test(value)) {
       setStatus("error")
@@ -55,10 +57,33 @@ export default function Hero() {
     setStatus("loading")
     setError("")
 
-    // Simulado: no se guarda nada.
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      await addToWaitlist(value)
 
-    setStatus("success")
+      setEmail(value)
+      setStatus("success")
+    } catch (error) {
+      const apiError = error as Error & {
+        status?: number
+        code?: string
+      }
+
+      if (
+        apiError.status === 409 ||
+        apiError.code === "EMAIL_ALREADY_EXISTS"
+      ) {
+        setEmail(value)
+        setStatus("already")
+        return
+      }
+
+      console.error("Error al enviar el email:", error)
+
+      setStatus("error")
+      setError(
+        "No pudimos anotarte. Probá de nuevo en unos segundos.",
+      )
+    }
   }
 
   return (
@@ -81,6 +106,7 @@ export default function Hero() {
       "
     >
       {/* CONTENIDO */}
+
       <div className="min-w-0">
         <h1
           className="
@@ -115,7 +141,9 @@ export default function Hero() {
         </p>
 
         <div className="mt-8 w-full max-w-[600px] sm:mt-10">
-          {status === "success" ? (
+          {/* ÉXITO / YA EXISTÍA */}
+
+          {status === "success" || status === "already" ? (
             <div
               role="status"
               className="
@@ -134,19 +162,38 @@ export default function Hero() {
                 sm:py-5
               "
             >
-             <img src="/travy-email.png" alt="Travy" className="h-16 w-16 shrink-0 rounded-full" />
+              <img
+                src="/travy-email.png"
+                alt="Travy"
+                className="h-16 w-16 shrink-0 rounded-full"
+              />
 
               <div className="min-w-0">
                 <p className="text-base font-semibold text-ink sm:text-lg">
-                  Ya estás en la lista de espera.
+                  {status === "already"
+                    ? "Ya te habías anotado."
+                    : "Ya estás en la lista de espera."}
                 </p>
 
                 <p className="mt-1 text-sm leading-relaxed text-soft sm:text-base">
-                  Te escribiremos a{" "}
-                  <span className="break-all font-medium text-ink">
-                    {email.trim()}
-                  </span>{" "}
-                  cuando sea tu turno.
+                  {status === "already" ? (
+                    <>
+                      El mail{" "}
+                      <span className="break-all font-medium text-ink">
+                        {email.trim()}
+                      </span>{" "}
+                      ya está registrado. Te avisaremos cuando Travelly esté
+                      listo.
+                    </>
+                  ) : (
+                    <>
+                      Te escribiremos a{" "}
+                      <span className="break-all font-medium text-ink">
+                        {email.trim()}
+                      </span>{" "}
+                      cuando sea tu turno.
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -188,6 +235,7 @@ export default function Hero() {
 
                   if (status === "error") {
                     setStatus("idle")
+                    setError("")
                   }
                 }}
                 aria-invalid={status === "error"}
@@ -235,8 +283,17 @@ export default function Hero() {
                   <>
                     <span
                       aria-hidden="true"
-                      className="h-4 w-4 rounded-full border-2 border-current border-t-transparent motion-safe:animate-spin"
+                      className="
+                        h-4
+                        w-4
+                        rounded-full
+                        border-2
+                        border-current
+                        border-t-transparent
+                        motion-safe:animate-spin
+                      "
                     />
+
                     Enviando…
                   </>
                 ) : (
@@ -246,11 +303,20 @@ export default function Hero() {
             </form>
           )}
 
-          {status !== "success" && (
+          {/* MENSAJE INFERIOR */}
+
+          {status !== "success" && status !== "already" && (
             <p
               id={msgId}
               role={status === "error" ? "alert" : undefined}
-              className="mt-3 min-h-5 px-4 text-sm text-soft sm:px-5"
+              className="
+                mt-3
+                min-h-5
+                px-4
+                text-sm
+                text-soft
+                sm:px-5
+              "
             >
               {status === "error"
                 ? error
@@ -261,6 +327,7 @@ export default function Hero() {
       </div>
 
       {/* DEMO */}
+
       <div
         className="
           mx-auto
