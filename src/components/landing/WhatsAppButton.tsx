@@ -1,57 +1,44 @@
 import {
   WhatsappFreeIcons,
   XIcon,
-} from '@hugeicons/core-free-icons'
-
-import { HugeiconsIcon } from '@hugeicons/react'
-
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from 'react'
+  TRAVY_WHATSAPP_ENABLED,
+  buildTravyWhatsAppUrl,
+} from "../../lib/whatsapp";
 
-const DEMO_URL = '/demo/whatsapp-demo.html'
-
-// const WA_NUMBER = '5491100000000'
-
-// const WA_TEXT = 'Hola Travy, quiero armar mi viaje'
+const DEMO_URL = "/demo/whatsapp-demo.html";
 
 export default function WhatsAppButton() {
-  const [open, setOpen] = useState(false)
-
-  const rootRef = useRef<HTMLDivElement>(null)
-
-  const panelId = useId()
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const panelId = useId();
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-      }
-    }
+      if (e.key === "Escape") setOpen(false);
+    };
 
     const onDown = (e: PointerEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('keydown', onKey)
-    document.addEventListener('pointerdown', onDown)
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
 
     return () => {
-      document.removeEventListener('keydown', onKey)
-      document.removeEventListener('pointerdown', onDown)
-    }
-  }, [open])
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onDown);
+    };
+  }, [open]);
 
-  // const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
-  //   WA_TEXT,
-  // )}`
+  const whatsappUrl = buildTravyWhatsAppUrl();
 
   return (
     <div
@@ -60,7 +47,7 @@ export default function WhatsAppButton() {
         fixed
         bottom-[calc(1rem+env(safe-area-inset-bottom,0px))]
         right-4
-        z-30
+        z-[9999]
         sm:bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))]
         sm:right-5
       "
@@ -118,13 +105,11 @@ export default function WhatsAppButton() {
             )]
             sm:rounded-[40px]
           `,
-          `
-            md:w-[24rem]
-          `,
+          `md:w-[24rem]`,
           open
-            ? 'visible scale-100 opacity-100'
-            : 'invisible scale-[.2] opacity-0 motion-reduce:scale-100',
-        ].join(' ')}
+            ? "visible scale-100 opacity-100"
+            : "invisible scale-[.2] opacity-0 motion-reduce:scale-100",
+        ].join(" ")}
       >
         <div
           className="
@@ -195,7 +180,6 @@ export default function WhatsAppButton() {
           </p>
         </div>
 
-        {/* BOTONES */}
         <div
           className="
             flex
@@ -207,41 +191,42 @@ export default function WhatsAppButton() {
             sm:pb-2
           "
         >
-          {/* <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            tabIndex={open ? 0 : -1}
-            className="
-              flex
-              h-11
-              min-w-0
-              flex-1
-              items-center
-              justify-center
-             btn-primary
-            "
-          >
-            Probar en WhatsApp
-          </a> */}
-          <button
-          disabled={true}
-            rel="noopener noreferrer"
-            tabIndex={open ? 0 : -1}
-            className="
-              flex
-              h-11
-              min-w-0
-              flex-1
-              items-center
-              justify-center
-             btn-primary
-            "
-          >
-            Próximamente
-          </button>
-
-
+          {TRAVY_WHATSAPP_ENABLED ? (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              tabIndex={open ? 0 : -1}
+              className="
+                btn-primary
+                flex
+                h-11
+                min-w-0
+                flex-1
+                items-center
+                justify-center
+              "
+            >
+              Probar en WhatsApp
+            </a>
+          ) : (
+            <button
+              type="button"
+              disabled
+              tabIndex={open ? 0 : -1}
+              className="
+                btn-primary
+                flex
+                h-11
+                min-w-0
+                flex-1
+                items-center
+                justify-center
+              "
+            >
+              Próximamente
+            </button>
+          )}
         </div>
       </div>
 
@@ -250,8 +235,8 @@ export default function WhatsAppButton() {
         onClick={() => setOpen((o) => !o)}
         aria-label={
           open
-            ? 'Cerrar vista previa de WhatsApp'
-            : 'Ver Travy en WhatsApp'
+            ? "Cerrar vista previa de WhatsApp"
+            : "Ver Travy en WhatsApp"
         }
         aria-expanded={open}
         aria-controls={panelId}
@@ -283,25 +268,24 @@ export default function WhatsAppButton() {
           icon={WhatsappFreeIcons}
           size={22}
           className={[
-            'absolute transition duration-300',
+            "absolute transition duration-300",
             open
-              ? 'rotate-90 scale-50 opacity-0'
-              : 'rotate-0 scale-100 opacity-100',
-          ].join(' ')}
+              ? "rotate-90 scale-50 opacity-0"
+              : "rotate-0 scale-100 opacity-100",
+          ].join(" ")}
         />
 
         <HugeiconsIcon
           icon={XIcon}
           size={22}
           className={[
-            'absolute transition duration-300',
+            "absolute transition duration-300",
             open
-              ? 'rotate-0 scale-100 opacity-100'
-              : '-rotate-90 scale-50 opacity-0',
-          ].join(' ')}
+              ? "rotate-0 scale-100 opacity-100"
+              : "-rotate-90 scale-50 opacity-0",
+          ].join(" ")}
         />
 
-        {/* TOOLTIP */}
         {!open && (
           <span
             className="
@@ -333,5 +317,5 @@ export default function WhatsAppButton() {
         )}
       </button>
     </div>
-  )
+  );
 }

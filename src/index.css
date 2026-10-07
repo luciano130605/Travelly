@@ -129,6 +129,16 @@ body {
   }
 }
 
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+
 @layer components {
   .wrap {
     @apply mx-auto max-w-6xl px-6;

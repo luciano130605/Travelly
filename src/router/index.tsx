@@ -9,6 +9,7 @@ import Terminos from '../page/terminosPage'
 import Privacidad from '../page/privacidadPage'
 import Faqs from '../page/faqsPage'
 import OnboardingPage from '../components/Auth/Onboarding'
+import RecoverPasswordPage from '../page/recuperarPage'
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
   {
     path: '/registro',
     element: <Registro />,
+  },
+  {
+    path: '/recuperar',
+    element: <RecoverPasswordPage />,
   },
   {
     path: '/onboarding',

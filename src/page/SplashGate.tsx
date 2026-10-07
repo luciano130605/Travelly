@@ -144,7 +144,7 @@ export function SplashGate({
           className={[
             'fixed inset-0 z-[9999]',
             'flex flex-col items-center justify-center',
-            'bg-[#141414] text-white',
+            'bg-paper text-ink',
             'transition-opacity ease-out',
           ].join(' ')}
           style={{
@@ -205,7 +205,7 @@ export function SplashGate({
                 min-h-[24px]
                 px-6
                 text-sm
-                text-white/50
+                text-soft
                 sm:text-[15px]
               "
             >

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-// import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { applyTheme, getInitialTheme, type Theme } from '../../lib/theme'
 
 interface Icons {
   className?: string;
@@ -84,13 +85,10 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string | null>(null)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme') as 'light' | 'dark' | null
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    const initialTheme = saved ?? (systemDark ? 'dark' : 'light')
+    const initialTheme = getInitialTheme()
 
     setTheme(initialTheme)
     document.documentElement.dataset.theme = initialTheme
@@ -100,8 +98,7 @@ export default function Header() {
     const nextTheme = theme === 'dark' ? 'light' : 'dark'
 
     setTheme(nextTheme)
-    document.documentElement.dataset.theme = nextTheme
-    localStorage.setItem('theme', nextTheme)
+    applyTheme(nextTheme)
   }
 
   useEffect(() => {

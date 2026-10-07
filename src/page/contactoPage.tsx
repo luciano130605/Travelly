@@ -297,13 +297,42 @@ const sections: LegalSection[] = [
 
 export default function Contacto() {
   return (
-    <LegalLayout
-      pageTitle="Contacto"
-      heading="Contacto"
-      intro="Contanos que necesitas. Te respondemos nosotros, con una persona real del equipo."
-      updated="6 de octubre de 2026"
-      updatedView={false}
-      sections={sections}
-    />
+    <div>
+      <LegalLayout
+        pageTitle="Contacto"
+        heading="Contacto"
+        intro="Contanos que necesitas. Te respondemos nosotros, con una persona real del equipo."
+        updated="6 de octubre de 2026"
+        updatedView={false}
+        sections={sections}
+      />
+      <footer className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 text-sm text-[#9a9890] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>© {new Date().getFullYear()} Travelly. Tu viaje, mucho más fácil.</p>
+          <nav aria-label="Legal" className="flex gap-6">
+            <Link
+              to="/privacidad"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Privacidad
+            </Link>
+            <Link
+              to="/terminos"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Términos
+            </Link>
+            <Link
+              to="/faqs"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              FAQs
+            </Link>
+
+          </nav>
+        </div>
+      </footer>
+    </div>
+
   );
 }

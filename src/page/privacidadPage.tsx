@@ -10,8 +10,10 @@ const sections: LegalSection[] = [
     content: (
       <P>
         Travelly es responsable del tratamiento de los datos personales que se recopilan a través de la
-        app, el sitio web y el asistente Travy. Esta política explica qué datos usamos, para qué y qué
-        derechos tenés. Cualquier consulta la podés hacer a ayuda@travelly.app.
+        app, el sitio web y el asistente Travy. Responsable: [nombre o razón social], con domicilio en
+        [domicilio], Ciudad Autónoma de Buenos Aires. Base de datos inscripta ante la AAIP: [número de
+        registro, si corresponde]. Esta política explica qué datos usamos, para qué y qué derechos tenés.
+        Cualquier consulta la podés hacer a ayuda@travelly.app.
       </P>
     ),
   },
@@ -22,11 +24,17 @@ const sections: LegalSection[] = [
       <Ul
         items={[
           <>
-            <span className={b}>Cuenta:</span> nombre, email y contraseña (guardada de forma cifrada).
+            <span className={b}>Cuenta:</span> nombre, email y contraseña (guardada de forma cifrada), y el
+            estado de verificación de tu mail (si lo confirmaste y cuándo).
           </>,
           <>
-            <span className={b}>Perfil de viajero:</span> intereses, presupuesto, ritmo de viaje y
+            <span className={b}>Perfil de viajero:</span> país de tu pasaporte, rango de edad, intereses,
+            presupuesto, ritmo de viaje, con quién viajás, alojamiento y transporte preferidos, y
             preferencias que cargues o que Travelly aprenda de tus interacciones.
+          </>,
+          <>
+            <span className={b}>Necesidades de viaje (opcional):</span> si elegís opciones como viajar con
+            niños, movilidad reducida, dieta especial o mascota.
           </>,
           <>
             <span className={b}>Datos del viaje:</span> destino, fechas, alojamiento, itinerario, lugares
@@ -35,6 +43,10 @@ const sections: LegalSection[] = [
           <>
             <span className={b}>Conversaciones con Travy:</span> los mensajes que le escribís y sus
             respuestas, para que pueda recordar el contexto de tu viaje.
+          </>,
+          <>
+            <span className={b}>Canales de mensajería:</span> si vinculás WhatsApp o Telegram, tu número de
+            teléfono o tu usuario, y los mensajes que intercambiás con Travy por ahí.
           </>,
           <>
             <span className={b}>Ubicación:</span> solo si das el permiso en tu dispositivo. La usamos para
@@ -53,14 +65,21 @@ const sections: LegalSection[] = [
   },
   {
     id: "no-pedimos",
-    title: "Lo que no te pedimos",
+    title: "Lo que no te pedimos y lo que es opcional",
     content: (
-      <P>
-        No necesitamos tu número de pasaporte, documentos de identidad ni datos de tarjetas para que
-        Travelly funcione. Te recomendamos no escribirlos en el chat con Travy. Tampoco recopilamos datos
-        sensibles (salud, religión, etc.) de forma intencional: si mencionás una vacuna o una restricción
-        alimentaria para armar tu viaje, la usamos solo para eso.
-      </P>
+      <>
+        <P>
+          No necesitamos tu número de pasaporte, documentos de identidad ni datos de tarjetas para que
+          Travelly funcione. Te recomendamos no escribirlos en el chat con Travy.
+        </P>
+        <P>
+          En el perfil te ofrecemos indicar necesidades de viaje (movilidad reducida, dieta especial,
+          viajar con niños o mascota). Es opcional: nadie está obligado a darnos esa información. Si la
+          elegís, entendemos que nos das tu consentimiento para usarla únicamente para adaptar
+          recomendaciones, itinerarios y avisos. Podés cambiarla o borrarla cuando quieras desde tu perfil,
+          y no la usamos para publicidad ni para otros fines.
+        </P>
+      </>
     ),
   },
   {
@@ -90,6 +109,8 @@ const sections: LegalSection[] = [
             "servicios de infraestructura y almacenamiento donde se aloja la app",
             "el proveedor del modelo de inteligencia artificial que genera las respuestas de Travy, que recibe el contenido de la conversación y el contexto necesario para responder",
             "proveedores de clima, mapas y transporte, a los que se envían consultas como destino, fechas o ubicación aproximada",
+            "un proveedor de envío de emails, para mandarte el código de verificación y otros avisos de tu cuenta",
+            "Meta (WhatsApp) y Telegram, si elegís hablar con Travy por esos canales: ellos tratan tus mensajes según sus propias políticas",
             "herramientas de análisis y reporte de errores",
           ]}
         />
@@ -98,6 +119,18 @@ const sections: LegalSection[] = [
           publiques en la comunidad es visible para otras personas usuarias.
         </P>
       </>
+    ),
+  },
+  {
+    id: "transferencias",
+    title: "Transferencias internacionales",
+    content: (
+      <P>
+        Algunos de los proveedores mencionados (infraestructura, inteligencia artificial, mensajería, envío
+        de emails) pueden tener servidores fuera de Argentina. Cuando eso pasa, trabajamos con proveedores
+        que ofrecen niveles adecuados de protección, o con garantías contractuales, como pide la Ley 25.326.
+        Al usar Travelly y vincular estos servicios, aceptás esas transferencias.
+      </P>
     ),
   },
   {
@@ -118,11 +151,13 @@ const sections: LegalSection[] = [
       <>
         <P>
           Según la Ley 25.326 de Protección de Datos Personales, podés acceder a tus datos, rectificarlos,
-          actualizarlos y pedir su supresión. Escribinos a ayuda@travelly.app o desde{" "}
+          actualizarlos y pedir su supresión, de forma gratuita en los plazos que fija la ley. También podés
+          retirar el consentimiento para los datos opcionales (como tus necesidades de viaje) y desvincular
+          WhatsApp o Telegram desde tu perfil. Escribinos a ayuda@travelly.app o desde{" "}
           <Link to="/contacto" className="text-white underline underline-offset-4">
             contacto
           </Link>
-          . Respondemos dentro de los plazos que fija la ley.
+          .
         </P>
         <P>
           La Agencia de Acceso a la Información Pública (AAIP), como órgano de control de la Ley 25.326,
@@ -182,13 +217,42 @@ const sections: LegalSection[] = [
 
 export default function Privacidad() {
   return (
-    <LegalLayout
-      pageTitle="Política de privacidad"
-      heading="Privacidad"
-      updatedView={true}
-      intro="Qué datos usa Travelly, para qué y cómo podés controlarlos. Para que Travy te conozca no necesitamos más que lo que cargás vos."
-      updated="6 de octubre de 2026"
-      sections={sections}
-    />
+    <div>
+      <LegalLayout
+        pageTitle="Política de privacidad"
+        heading="Privacidad"
+        updatedView={true}
+        intro="Qué datos usa Travelly, para qué y cómo podés controlarlos. Para que Travy te conozca no necesitamos más que lo que cargás vos."
+        updated="6 de octubre de 2026"
+        sections={sections}
+      />
+      <footer className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 text-sm text-[#9a9890] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>© {new Date().getFullYear()} Travelly. Tu viaje, mucho más fácil.</p>
+          <nav aria-label="Legal" className="flex gap-6">
+
+            <Link
+              to="/terminos"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Términos
+            </Link>
+            <Link
+              to="/contacto"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Contacto
+            </Link>
+            <Link
+              to="/faqs"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              FAQs
+            </Link>
+
+          </nav>
+        </div>
+      </footer>
+    </div>
   );
 }

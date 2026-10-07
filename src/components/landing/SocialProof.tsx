@@ -151,7 +151,7 @@ function Pill({
         onFocus={(e) => onShow(app, e.currentTarget)}
         onBlur={onHide}
         onClick={(e) => onShow(app, e.currentTarget)}
-        className="flex shrink-0 items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm text-white/75 transition-colors hover:border-white/25 hover:text-white focus-visible:border-white/40 focus-visible:text-white focus-visible:outline-none"
+        className="flex shrink-0 items-center gap-2.5 rounded-full border border-line bg-paper px-5 py-3 text-sm text-ink transition-colors hover:bg-mist focus:border-soft focus:bg-mist focus:outline-none"
       >
         <span
           aria-hidden="true"
@@ -177,7 +177,6 @@ function Row({
   onShow: ShowFn
   onHide: () => void
 }) {
-  // El contenido se duplica para que el loop (-50%) sea continuo.
   return (
     <div className="sp-row overflow-hidden py-1">
       <ul className={`sp-track flex w-max gap-3 ${reverse ? 'sp-reverse' : ''}`}>
@@ -219,7 +218,6 @@ export default function SocialProof() {
   }
   const hide = () => setTip(null)
 
-  // Cierra al tocar afuera (mobile), al scrollear o con Escape.
   useEffect(() => {
     const onPointerDown = (e: PointerEvent) => {
       if (!(e.target as HTMLElement).closest('[data-sp-pill]')) setTip(null)
@@ -263,19 +261,19 @@ export default function SocialProof() {
       <div className="mx-auto max-w-2xl px-6 text-center">
         <h2
           id="conectado-title"
-          className="text-4xl font-medium tracking-tight text-white md:text-5xl"
+          className="text-4xl font-medium tracking-tight text-ink md:text-5xl"
         >
           Conectado con lo que ya usás
         </h2>
-        <p className="mt-4 text-base text-white/60">
+        <p className="mt-4 text-base text-soft">
           Travy trae datos de fuentes reales y se conecta a tus apps para que no
           tengas que copiar nada a mano.
         </p>
-        <p className="mt-2 text-sm text-white/40">
+        <p className="mt-2 text-sm text-soft">
           Pasá el mouse o tocá una para ver cómo se conecta.
         </p>
 
-        <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-white/50">
+        <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-soft">
           {(Object.keys(VIA) as Via[]).map((v) => (
             <li key={v} className="flex items-center gap-2">
               <span
@@ -305,7 +303,6 @@ export default function SocialProof() {
         />
       </div>
 
-      {/* Fuera de .sp-mask y de overflow-hidden para que no se recorte. */}
       {tip && (
         <div
           id="sp-tooltip"
@@ -317,18 +314,18 @@ export default function SocialProof() {
             width: TIP_WIDTH,
             transform: tip.below ? undefined : 'translateY(-100%)',
           }}
-          className="pointer-events-none z-50 rounded-2xl border border-white/10 bg-neutral-900 p-4 text-left"
+          className="pointer-events-none z-50 rounded-2xl border border-line bg-mist p-4 text-left"
         >
           <div className="flex items-center justify-between gap-3">
-            <span className="text-sm font-medium text-white">
+            <span className="text-sm font-medium text-ink">
               {tip.app.name}
               {tip.app.soon && (
-                <span className="ml-2 rounded-full border border-white/15 px-2 py-0.5 text-[11px] font-normal text-white/60">
+                <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-[11px] font-normal text-soft">
                   Próximamente
                 </span>
               )}
             </span>
-            <span className="flex shrink-0 items-center gap-1.5 text-xs text-white/55">
+            <span className="flex shrink-0 items-center gap-1.5 text-xs text-soft">
               <span
                 aria-hidden="true"
                 className="h-1.5 w-1.5 rounded-full"
@@ -337,8 +334,8 @@ export default function SocialProof() {
               {VIA[tip.app.via].label}
             </span>
           </div>
-          <p className="mt-2 text-sm text-white/55">{tip.app.gives}</p>
-          <p className="mt-3 border-t border-white/10 pt-3 text-sm text-white/85">
+          <p className="mt-2 text-sm text-soft">{tip.app.gives}</p>
+          <p className="mt-3 border-t border-line pt-3 text-sm text-ink">
             {tip.app.how}
           </p>
         </div>

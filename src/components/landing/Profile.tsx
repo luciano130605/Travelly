@@ -21,7 +21,7 @@ const PROFILES: {
   stops: Stop[]
 }[] = [
     {
-      name: 'Perfil 01',
+      name: 'Viajero 01',
       tags: ['Museos', 'Arquitectura', 'Cafeterías', 'Caminatas', 'Gastronomía local'],
       steps: [
         'Te gusta descubrir la ciudad caminando.',
@@ -37,7 +37,7 @@ const PROFILES: {
       ],
     },
     {
-      name: 'Perfil 02',
+      name: 'Viajero 02',
       tags: ['Shopping', 'Vida nocturna', 'Anime', 'Tecnología', 'Restaurantes'],
       steps: [
         'Guardás tiendas de anime y electrónica.',

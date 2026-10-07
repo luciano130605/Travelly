@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { usePageTitle } from "../components/hooks/usePageTitle";
 
 export default function NotFound() {
+  usePageTitle("Página no encontrada")
   return (
     <main className="min-h-screen bg-mist px-5 py-8 text-ink sm:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col items-center justify-center text-center">
@@ -13,7 +15,7 @@ export default function NotFound() {
           className="mb-8 size-24 object-contain"
         />
 
-       
+
 
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
           Este lugar no está en el mapa.
@@ -40,7 +42,7 @@ export default function NotFound() {
           </Link>
         </div>
 
-       
+
       </div>
     </main>
   );

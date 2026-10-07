@@ -31,22 +31,7 @@ export default function PageShell({ children }: { children: ReactNode }) {
 
             <main>{children}</main>
 
-            <footer className="border-t border-white/10">
-                <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 text-sm text-[#9a9890] sm:flex-row sm:items-center sm:justify-between sm:px-8">
-                    <p>© {new Date().getFullYear()} Travelly. Tu viaje, mucho más fácil.</p>
-                    <nav aria-label="Legal" className="flex gap-6">
-                        {FOOTER_LINKS.map((l) => (
-                            <Link
-                                key={l.to}
-                                to={l.to}
-                                className="transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4c7dff]"
-                            >
-                                {l.label}
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
-            </footer>
+           
         </div>
     );
 }

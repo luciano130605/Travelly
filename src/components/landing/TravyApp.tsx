@@ -528,7 +528,7 @@ export default function TravyApp() {
     const showHandle = view === 'plan' || view === 'place'
 
     return (
-        <div className="relative mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-[#26231f] bg-[#0d0b09] text-[#f4f1ec] shadow-[0_30px_80px_rgba(0,0,0,.35)] lg:grid lg:grid-cols-[1fr_20rem]">
+        <div className="relative z-0 mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-[#26231f] bg-[#0d0b09] text-[#f4f1ec] shadow-[0_30px_80px_rgba(0,0,0,.35)] lg:grid lg:grid-cols-[1fr_20rem]">
             <style>{`
         @keyframes wa-msg{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         @keyframes wa-fade{from{opacity:0}to{opacity:1}}
@@ -778,11 +778,11 @@ export default function TravyApp() {
                             </dl>
                             <div className="mt-4 flex items-start gap-2.5 rounded-2xl bg-[#0d0b09] p-3">
                                 <img
-                                    src="/demo/travy.png"
+                                    src="/travy-museo.png"
                                     alt=""
                                     width={24}
                                     height={24}
-                                    className="size-6 shrink-0 object-contain"
+                                    className="size-10 shrink-0 object-contain"
                                 />
                                 <p className="text-xs leading-snug text-[#a8a39b]">
                                     <span className="font-medium text-[#f4f1ec]">

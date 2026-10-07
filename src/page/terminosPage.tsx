@@ -70,6 +70,12 @@ const sections: LegalSection[] = [
                             referencia aproximada, y los pronósticos pueden variar.
                         </>,
                         <>
+                            <strong className="font-medium text-white">Accesibilidad y necesidades especiales:</strong>{" "}
+                            si indicás que viajás con niños, con movilidad reducida, con mascota o con una dieta especial, Travy
+                            adapta las sugerencias, pero no podemos garantizar que un lugar, transporte o restaurante sea accesible
+                            o apto. Confirmalo directamente con el prestador.
+                        </>,
+                        <>
                             <strong className="font-medium text-white">Transporte y precios:</strong> los valores y
                             tiempos son estimaciones.
                         </>,
@@ -84,7 +90,7 @@ const sections: LegalSection[] = [
     },
     {
         id: "cuenta",
-        title: "Tu cuenta",
+        title: "Tu cuenta y la verificación de mail",
         content: (
             <>
                 <P>
@@ -95,6 +101,12 @@ const sections: LegalSection[] = [
                         contacto
                     </Link>
                     .
+                </P>
+                <P>
+                    Cuando te registrás te enviamos un mail con un código de verificación para confirmar que la casilla es
+                    tuya. Tenés que usar un mail al que tengas acceso. El código tiene un tiempo de vigencia: si
+                    vence o no te llega, podés pedir uno nuevo desde la app. Hasta que confirmes tu mail, algunas funciones
+                    (como guardar tu viaje o usar Travy por mensajería) pueden estar limitadas.
                 </P>
                 <P>
                     Podés eliminar tu cuenta cuando quieras. Podemos suspenderla si incumplís estos términos o si el
@@ -116,6 +128,26 @@ const sections: LegalSection[] = [
                         "hacer spam, publicidad no solicitada o reseñas pagas sin avisarlo",
                         "acceder sin permiso a sistemas o cuentas, o intentar extraer datos de forma automatizada",
                         "interferir con el funcionamiento del servicio",
+                    ]}
+                />
+            </>
+        ),
+    },
+    {
+        id: "canales",
+        title: "Travy por WhatsApp y Telegram",
+        content: (
+            <>
+                <P>
+                    Podés hablar con Travy desde WhatsApp o Telegram. Para reconocerte, validamos tu número de
+                    teléfono (WhatsApp) o tu usuario (Telegram) y lo vinculamos a tu cuenta.
+                </P>
+                <Ul
+                    items={[
+                        "esos servicios son de terceros (Meta y Telegram) y tienen sus propios términos y políticas de privacidad, que también te aplican",
+                        "no controlamos su disponibilidad ni cómo tratan los mensajes en sus plataformas",
+                        "no le escribas a Travy números de pasaporte, de tarjetas ni contraseñas",
+                        "podés desvincular el canal cuando quieras desde tu perfil",
                     ]}
                 />
             </>
@@ -219,13 +251,40 @@ const sections: LegalSection[] = [
 
 export default function Terminos() {
     return (
-        <LegalLayout
-            pageTitle="Términos y condiciones"
-            heading="Términos y condiciones"
-            intro="Las reglas para usar Travelly, escritas para que se entiendan. Lo importante: la información es una guía, y la decisión sobre tu viaje es tuya."
-            updated="6 de octubre de 2026"
-            updatedView={true}
-            sections={sections}
-        />
+        <div>
+            <LegalLayout
+                pageTitle="Términos y condiciones"
+                heading="Términos y condiciones"
+                intro="Las reglas para usar Travelly, escritas para que se entiendan. Lo importante: la información es una guía, y la decisión sobre tu viaje es tuya."
+                updated="6 de octubre de 2026"
+                updatedView={true}
+                sections={sections}
+            />
+            <footer className="border-t border-white/10">
+                <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 text-sm text-[#9a9890] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+                    <p>© {new Date().getFullYear()} Travelly. Tu viaje, mucho más fácil.</p>
+                    <nav aria-label="Legal" className="flex gap-6">
+                        <Link
+                            to="/privacidad"
+                            className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+                        >
+                            Privacidad
+                        </Link>
+                        <Link
+                            to="/contacto"
+                            className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+                        >
+                            Contacto
+                        </Link>
+                        <Link
+                            to="/faqs"
+                            className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+                        >
+                            FAQs
+                        </Link>
+                    </nav>
+                </div>
+            </footer>
+        </div>
     );
 }

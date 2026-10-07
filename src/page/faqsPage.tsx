@@ -165,6 +165,94 @@ const sections: LegalSection[] = [
     ),
   },
   {
+    id: "verificar-mail",
+    title: "Por qué tengo que confirmar mi mail",
+    content: (
+      <P>
+        Cuando te registrás te mandamos un código de 6 dígitos para confirmar que la casilla es tuya. Así protegemos tu
+        cuenta, podemos ayudarte a recuperarla si olvidás la contraseña y avisarte de lo importante de tu
+        viaje. Hasta que lo confirmes, algunas funciones pueden estar limitadas.
+      </P>
+    ),
+  },
+  {
+    id: "mail-no-llega",
+    title: "No me llegó el mail de confirmación",
+    content: (
+      <>
+        <P>Probá esto, en orden:</P>
+        <Ul
+          items={[
+            "revisá spam, promociones o correo no deseado",
+            "fijate que hayas escrito bien tu mail al registrarte",
+            "pedí un mail nuevo desde el onboarding o desde tu perfil (se puede reenviar cada 60 segundos)",
+            "si el código venció, el mail nuevo trae uno nuevo",
+          ]}
+        />
+        <P>
+          Si nada funciona, escribinos desde{" "}
+          <Link to="/contacto" className="text-white underline underline-offset-4">
+            contacto
+          </Link>
+          .
+        </P>
+      </>
+    ),
+  },
+  {
+    id: "onboarding",
+    title: "Tengo que completar todo el perfil",
+    content: (
+      <P>
+        No. Podés saltar cualquier paso y completarlo después desde tu perfil. Mientras más sepa Travy
+        (país del pasaporte, edad, intereses, ritmo, presupuesto), mejores van a ser los requisitos y las
+        recomendaciones que te muestre.
+      </P>
+    ),
+  },
+  {
+    id: "necesidades",
+    title: "Para qué pregunta por movilidad reducida, dieta o mascotas",
+    content: (
+      <P>
+        Es opcional y sirve solo para adaptar lo que te recomienda Travy: lugares accesibles, opciones de
+        comida o actividades con niños y mascotas. Podés cambiarlo o borrarlo cuando quieras. No lo usamos
+        para otra cosa, y lo explicamos en la{" "}
+        <Link to="/privacidad" className="text-white underline underline-offset-4">
+          política de privacidad
+        </Link>
+        .
+      </P>
+    ),
+  },
+  {
+    id: "whatsapp-telegram",
+    title: "Cómo funciona Travy por WhatsApp y Telegram",
+    content: (
+      <P>
+        Podés hablar con Travy desde esos canales. Validamos tu número o tu usuario para reconocerte y
+        responderte con el contexto de tu viaje. Esos servicios son de terceros y tienen sus propias
+        políticas. No le escribas números de pasaporte ni de tarjetas. Podés desvincular el canal cuando
+        quieras desde tu perfil.
+      </P>
+    ),
+  },
+  {
+    id: "borrar-cuenta",
+    title: "Cómo borro mi cuenta y mis datos",
+    content: (
+      <P>
+        Podés eliminar tu cuenta cuando quieras. Al hacerlo borramos o anonimizamos tus datos personales
+        en un plazo razonable, salvo lo que debamos guardar por obligación legal. Para pedir acceso,
+        rectificación o supresión de tus datos, escribinos desde{" "}
+        <Link to="/contacto" className="text-white underline underline-offset-4">
+          contacto
+        </Link>
+        .
+      </P>
+    ),
+  },
+  {
     id: "contacto",
     title: "No encontre mi pregunta",
     content: (
@@ -185,13 +273,42 @@ const sections: LegalSection[] = [
 
 export default function Faqs() {
   return (
-    <LegalLayout
-      pageTitle="Preguntas frecuentes"
-      updatedView={true}
-      heading="Preguntas frecuentes"
-      intro="Respuestas claras sobre Travelly, Travy, requisitos, equipaje, transporte, recomendaciones y privacidad."
-      updated="6 de octubre de 2026"
-      sections={sections}
-    />
+    <div>
+
+      <LegalLayout
+        pageTitle="Preguntas frecuentes"
+        updatedView={true}
+        heading="Preguntas frecuentes"
+        intro="Respuestas claras sobre Travelly, Travy, requisitos, equipaje, transporte, recomendaciones y privacidad."
+        updated="6 de octubre de 2026"
+        sections={sections}
+      />
+      <footer className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 text-sm text-[#9a9890] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>© {new Date().getFullYear()} Travelly. Tu viaje, mucho más fácil.</p>
+          <nav aria-label="Legal" className="flex gap-6">
+            <Link
+              to="/privacidad"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Privacidad
+            </Link>
+            <Link
+              to="/terminos"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Términos
+            </Link>
+            <Link
+              to="/contacto"
+              className="whitespace-nowrap transition-colors duration-300 hover:text-white"
+            >
+              Contacto
+            </Link>
+
+          </nav>
+        </div>
+      </footer>
+    </div>
   );
 }
