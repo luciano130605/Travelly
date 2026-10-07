@@ -5,8 +5,6 @@ type Status = "idle" | "loading" | "success" | "already" | "error"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const API_URL = import.meta.env.VITE_API_URL
-
 export default function Hero() {
   const [theme, setTheme] = useState<"light" | "dark">("light")
 
