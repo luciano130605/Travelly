@@ -1,507 +1,355 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Travelly · Tu compañero de viaje</title>
-  <style>
-    :root{
-      --bg:#11110f;
-      --bg2:#181816;
-      --panel:#1d1d1a;
-      --panel2:#22221f;
-      --paper:#f4f1eb;
-      --ink:#151513;
-      --text:#f2f0eb;
-      --muted:#8f8d86;
-      --muted2:#6d6b65;
-      --line:rgba(255,255,255,.09);
-      --line2:rgba(255,255,255,.055);
-      --blue:#6d83ff;
-      --blue2:#9aa9ff;
-      --green:#8eb59d;
-      --orange:#d8a77d;
-      --red:#d48d8d;
-      --radius:18px;
-      --sidebar:232px;
-      --max:1320px;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
-    body{font-size:14px;letter-spacing:-.01em}
-    button,input,textarea{font:inherit}
-    button{cursor:pointer}
-    a{color:inherit;text-decoration:none}
-    .app{min-height:100vh;display:flex}
-    .sidebar{
-      position:fixed;inset:0 auto 0 0;width:var(--sidebar);
-      padding:22px 16px 18px;background:#11110f;border-right:1px solid var(--line2);
-      display:flex;flex-direction:column;z-index:30;
-    }
-    .brand{display:flex;align-items:center;gap:10px;padding:4px 10px 26px}
-    .brand img,.mini-avatar{width:26px;height:26px;object-fit:contain}
-    .brand strong{font-size:14px;font-weight:650;letter-spacing:-.025em}
-    .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted2)}
-    .nav{display:grid;gap:4px}
-    .nav button{
-      width:100%;border:0;background:transparent;color:#8c8a83;
-      display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:11px;text-align:left;
-      transition:.2s;
-    }
-    .nav button:hover{background:#181816;color:#ddd}
-    .nav button.active{background:#1d1d1a;color:#f1efe9}
-    .icon{width:17px;height:17px;flex:none;opacity:.9}
-    .side-bottom{margin-top:auto;display:grid;gap:5px}
-    .profile-mini{display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid var(--line2);margin-top:8px}
-    .avatar-circle{width:30px;height:30px;border-radius:50%;background:#262624;display:grid;place-items:center;color:#ddd}
-    .profile-mini div:last-child{min-width:0}
-    .profile-mini strong{display:block;font-size:12px;font-weight:600}
-    .profile-mini span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-    main{margin-left:var(--sidebar);width:calc(100% - var(--sidebar));min-height:100vh}
-    .topbar{
-      height:66px;border-bottom:1px solid var(--line2);display:flex;align-items:center;
-      justify-content:space-between;padding:0 34px;position:sticky;top:0;background:rgba(17,17,15,.88);
-      backdrop-filter:blur(18px);z-index:20;
-    }
-    .topbar-title{font-size:13px;color:#bbb8b0}
-    .top-actions{display:flex;align-items:center;gap:8px}
-    .ghost,.pill,.primary,.secondary{
-      border:1px solid var(--line);background:transparent;color:#ddd;border-radius:999px;
-      padding:8px 13px;transition:.2s;
-    }
-    .ghost:hover,.secondary:hover{background:#1c1c19}
-    .primary{background:var(--paper);color:#151513;border-color:var(--paper);font-weight:600}
-    .primary:hover{transform:translateY(-1px);opacity:.94}
-    .content{max-width:var(--max);margin:0 auto;padding:42px 42px 70px}
-    .page{display:none}
-    .page.active{display:block}
-    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:stretch}
-    .welcome h1{font-size:clamp(38px,5vw,64px);line-height:.96;letter-spacing:-.055em;margin:8px 0 18px;font-weight:650}
-    .welcome p{max-width:540px;color:var(--muted);line-height:1.65;margin:0}
-    .welcome-actions{display:flex;gap:9px;margin-top:25px;flex-wrap:wrap}
-    .next-card{background:var(--paper);color:var(--ink);border-radius:26px;padding:26px;min-height:280px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-    .next-card:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-80px;top:-90px;background:radial-gradient(circle,rgba(103,126,255,.18),transparent 68%)}
-    .next-top{display:flex;justify-content:space-between;position:relative;z-index:1}
-    .next-top .eyebrow{color:#77746c}
-    .next-card h2{font-size:34px;letter-spacing:-.045em;margin:10px 0 3px;position:relative;z-index:1}
-    .next-meta{color:#67655f;position:relative;z-index:1}
-    .trip-route{display:flex;align-items:end;justify-content:space-between;gap:12px;position:relative;z-index:1}
-    .city{font-size:15px;font-weight:650}
-    .date{font-size:11px;color:#77746e;margin-top:4px}
-    .arrow{font-size:18px;color:#777}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
-    .stat{border-top:1px solid var(--line);padding-top:13px}
-    .stat strong{display:block;font-size:25px;letter-spacing:-.04em}
-    .stat span{font-size:11px;color:var(--muted)}
-    .section-head{display:flex;justify-content:space-between;align-items:end;margin:52px 0 16px}
-    .section-head h2{font-size:19px;letter-spacing:-.035em;margin:0}
-    .section-head p{color:var(--muted);font-size:12px;margin:4px 0 0}
-    .link-btn{border:0;background:none;color:#aeb9ff;padding:0;font-size:12px}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .card{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px}
-    .card h3{margin:11px 0 6px;font-size:15px;letter-spacing:-.025em}
-    .card p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
-    .number{font-size:30px;letter-spacing:-.05em}
-    .card-label{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted2)}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .list{display:grid}
-    .row{display:grid;grid-template-columns:76px 1fr auto;gap:15px;padding:14px 0;border-bottom:1px solid var(--line2);align-items:center}
-    .row:last-child{border-bottom:0}
-    .row .time{font-size:11px;color:var(--muted)}
-    .row strong{font-size:13px;font-weight:550}
-    .row small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
-    .tag{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#262623;color:#aaa69d;font-size:10px}
-    .dot{width:5px;height:5px;border-radius:50%;background:var(--blue)}
-    .chat-layout{height:calc(100vh - 66px);display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1100px;margin:auto}
-    .chat-list{border-right:1px solid var(--line2);padding:24px 14px}
-    .chat-list h2{font-size:15px;margin:0 8px 15px}
-    .chat-item{padding:12px;border-radius:13px;display:flex;gap:10px;align-items:center;cursor:pointer}
-    .chat-item.active{background:#1c1c19}
-    .chat-item .mini-avatar{width:30px;height:30px}
-    .chat-item strong{font-size:12px;font-weight:550}
-    .chat-item small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
-    .chat-main{display:flex;flex-direction:column;min-width:0}
-    .chat-head{padding:18px 25px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:10px}
-    .chat-head img{width:31px;height:31px;object-fit:contain}
-    .chat-head strong{font-size:13px}
-    .chat-head small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
-    .messages{flex:1;overflow:auto;padding:30px 8%;display:flex;flex-direction:column;gap:16px}
-    .msg{max-width:620px;line-height:1.55;font-size:13px}
-    .msg.travy{align-self:flex-start}
-    .msg.user{align-self:flex-end;background:#23231f;border:1px solid var(--line2);padding:12px 15px;border-radius:16px 16px 4px 16px}
-    .msg.travy p{margin:0 0 9px}
-    .msg.travy p:last-child{margin-bottom:0}
-    .suggestions{display:flex;flex-wrap:wrap;gap:7px}
-    .suggestions button{border:1px solid var(--line);background:#181816;color:#aaa;border-radius:999px;padding:7px 10px;font-size:10px}
-    .chat-composer{padding:15px 8%;border-top:1px solid var(--line2)}
-    .composer{display:flex;gap:8px;background:#1c1c19;border:1px solid var(--line);border-radius:17px;padding:6px}
-    .composer input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#eee;padding:10px 12px}
-    .composer button{width:39px;height:39px;border:0;border-radius:12px;background:var(--paper);color:#111;display:grid;place-items:center}
-    .trips-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}
-    .trips-head h1,.detail-head h1{font-size:42px;letter-spacing:-.055em;margin:7px 0 0}
-    .trip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    .trip-card{background:var(--panel);border:1px solid var(--line2);border-radius:19px;overflow:hidden;cursor:pointer;transition:.2s}
-    .trip-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.13)}
-    .trip-cover{height:170px;background:linear-gradient(135deg,#c9d0e9,#e8e3d8 48%,#aeb8c8);position:relative;overflow:hidden}
-    .trip-cover:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(80,105,255,.2),transparent 30%),linear-gradient(180deg,transparent,rgba(0,0,0,.22))}
-    .trip-cover .cover-label{position:absolute;left:17px;bottom:15px;color:#fff;z-index:2;font-size:12px}
-    .trip-body{padding:17px}
-    .trip-body h3{margin:0;font-size:21px;letter-spacing:-.04em}
-    .trip-body p{margin:6px 0 14px;color:var(--muted);font-size:11px}
-    .trip-footer{display:flex;justify-content:space-between;align-items:center}
-    .progress{height:4px;background:#2a2a26;border-radius:9px;overflow:hidden;flex:1;margin-right:12px}
-    .progress span{display:block;height:100%;background:var(--blue);width:72%}
-    .detail-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:25px}
-    .back{border:0;background:none;color:var(--muted);padding:0 0 10px;font-size:11px}
-    .detail-hero{background:var(--paper);color:var(--ink);border-radius:23px;padding:25px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
-    .detail-hero h2{font-size:34px;letter-spacing:-.05em;margin:8px 0}
-    .detail-hero p{color:#6e6b64;line-height:1.55;max-width:430px}
-    .route-line{display:flex;align-items:center;gap:10px;margin-top:22px}
-    .route-line span{height:1px;background:#aaa;flex:1}
-    .detail-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-    .kpi{border:1px solid rgba(20,20,20,.11);border-radius:13px;padding:14px}
-    .kpi strong{display:block;font-size:20px;letter-spacing:-.04em}
-    .kpi small{color:#77736b;font-size:10px}
-    .tabs{display:flex;gap:3px;margin:24px 0 14px;border-bottom:1px solid var(--line2);overflow:auto}
-    .tabs button{border:0;background:none;color:var(--muted);padding:11px 13px;font-size:12px;white-space:nowrap;border-bottom:1px solid transparent}
-    .tabs button.active{color:#eee;border-bottom-color:#eee}
-    .detail-content{display:grid;grid-template-columns:1.3fr .7fr;gap:13px}
-    .timeline .row{grid-template-columns:58px 1fr auto}
-    .check-list{display:grid;gap:9px}
-    .check{display:flex;gap:10px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line2)}
-    .check:last-child{border:0}
-    .check-box{width:15px;height:15px;border:1px solid #555;border-radius:4px;flex:none;margin-top:1px}
-    .check.done .check-box{background:var(--blue);border-color:var(--blue);position:relative}
-    .check.done .check-box:after{content:"";position:absolute;width:6px;height:3px;border-left:1px solid #fff;border-bottom:1px solid #fff;transform:rotate(-45deg);left:4px;top:4px}
-    .check strong{font-size:12px;font-weight:550}
-    .check small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
-    .section-title{font-size:13px;margin:0 0 14px}
-    .profile-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:14px}
-    .profile-card{background:var(--paper);color:var(--ink);border-radius:21px;padding:26px}
-    .profile-card img{width:74px;height:74px;object-fit:contain}
-    .profile-card h2{font-size:25px;letter-spacing:-.04em;margin:16px 0 5px}
-    .profile-card p{color:#6f6c65;font-size:12px;line-height:1.55}
-    .preference{display:flex;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid var(--line2)}
-    .preference:last-child{border-bottom:0}
-    .preference strong{font-size:12px}
-    .preference span{color:var(--muted);font-size:11px;text-align:right}
-    .mobile-bar{display:none}
-    @media(max-width:980px){
-      :root{--sidebar:76px}
-      .sidebar{padding:18px 10px}
-      .brand{justify-content:center;padding:4px 0 25px}
-      .brand strong,.nav span,.profile-mini div:last-child,.side-bottom .nav button span{display:none}
-      .nav button{justify-content:center;padding:11px}
-      .profile-mini{justify-content:center;padding:12px 0}
-      main{margin-left:var(--sidebar);width:calc(100% - var(--sidebar))}
-      .content{padding:32px 25px 60px}
-      .hero-grid,.detail-hero,.detail-content,.profile-grid{grid-template-columns:1fr}
-      .chat-layout{grid-template-columns:200px minmax(0,1fr)}
-    }
-    @media(max-width:700px){
-      :root{--sidebar:0px}
-      .sidebar{display:none}
-      main{margin:0;width:100%}
-      .topbar{height:58px;padding:0 16px}
-      .top-actions .ghost{display:none}
-      .content{padding:27px 17px 88px}
-      .hero-grid{gap:14px}
-      .welcome h1{font-size:45px}
-      .next-card{min-height:250px;border-radius:20px}
-      .stats,.cards,.two-col,.trip-grid{grid-template-columns:1fr}
-      .section-head{margin-top:38px}
-      .chat-layout{height:calc(100vh - 58px);display:block}
-      .chat-list{display:none}
-      .messages{padding:25px 17px 15px}
-      .chat-composer{padding:10px 12px}
-      .trips-head{align-items:start;gap:15px}
-      .trips-head h1,.detail-head h1{font-size:34px}
-      .detail-head{align-items:start;flex-direction:column}
-      .detail-hero{padding:20px}
-      .detail-hero h2{font-size:30px}
-      .mobile-bar{
-        display:flex;position:fixed;z-index:40;left:10px;right:10px;bottom:10px;
-        height:62px;background:rgba(28,28,25,.94);backdrop-filter:blur(18px);
-        border:1px solid var(--line);border-radius:19px;justify-content:space-around;align-items:center;
-      }
-      .mobile-bar button{border:0;background:none;color:#777;display:grid;gap:4px;place-items:center;font-size:9px}
-      .mobile-bar button.active{color:#f2f0eb}
-      .mobile-bar .icon{width:18px;height:18px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Travelly · Tu compañero de viaje</title>
+<style>
+:root{--bg:#0e0e0c;--alt:#171813;--card:#1a1a16;--card2:#20201b;--paper:#f4f1eb;--ink:#151513;--text:#f2f0eb;--muted:#8f8d86;--line:rgba(255,255,255,.09);--blue:#6d83ff;--blue2:#9aa9ff;--max:1120px;font-family:Inter,"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-size:14px;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue2);outline-offset:2px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+/* header */
+header{position:fixed;top:0;left:0;right:0;height:64px;z-index:50;background:rgba(14,14,12,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+header .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:14px;border:0;background:none;color:var(--text);padding:0}
+.brand img{width:24px;height:24px;object-fit:contain}
+.nav{display:flex;gap:4px}
+.nav button{border:0;background:none;color:var(--muted);padding:8px 12px;border-radius:999px;font-size:13px;transition:color .2s}
+.nav button:hover,.nav button.active{color:var(--text)}
+.nav button.active{background:var(--card)}
+.right{display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center;font-size:12px}
+.btn{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:9px 16px;font-size:13px;transition:background .2s}
+.btn:hover{background:var(--card)}
+.btn.primary{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:600}
+.btn.primary:hover{background:#fff}
+/* pages & sections */
+.page{display:none;padding-top:64px}.page.active{display:block}
+section.s{padding:96px 0}
+section.alt{background:var(--alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+h1,h2{font-weight:500;letter-spacing:-.05em;line-height:1;margin:0}
+h1{font-size:clamp(44px,7vw,84px)}
+h2{font-size:clamp(30px,4.2vw,48px);line-height:1.04}
+.lead{color:var(--muted);line-height:1.65;font-size:15px;max-width:460px;margin:18px 0 0}
+.head{margin-bottom:44px}
+.split{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:start}
+/* hero */
+.hero{padding:88px 0 96px}
+.hero .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.cta-row{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
+.phone{background:var(--paper);color:var(--ink);border-radius:30px;padding:26px;min-height:440px;max-width:360px;margin-left:auto;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;width:100%}
+.phone:after{content:"";position:absolute;width:300px;height:300px;right:-110px;top:-110px;border-radius:50%;background:radial-gradient(circle,rgba(109,131,255,.2),transparent 68%)}
+.phone>*{position:relative;z-index:1}
+.phone .top{display:flex;justify-content:space-between;align-items:start}
+.phone h3{font-size:36px;letter-spacing:-.05em;margin:6px 0 2px;font-weight:500}
+.phone small{color:#77746c}
+.tag{display:inline-flex;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.07);font-size:11px;color:#55524b}
+.dark .tag,.tag.d{background:#262622;color:#aaa69d}
+.route{display:flex;justify-content:space-between;align-items:end;border-top:1px solid rgba(0,0,0,.1);padding-top:16px}
+.route b{font-size:15px;font-weight:600;display:block}.route span{font-size:11px;color:#77746c}
+/* big number */
+.big{font-size:clamp(72px,10vw,120px);font-weight:500;letter-spacing:-.07em;line-height:.9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.stat{padding:26px;border-right:1px solid var(--line)}.stat:last-child{border:0}
+.stat b{display:block;font-size:44px;font-weight:500;letter-spacing:-.06em}
+.stat span{color:var(--muted);font-size:12px}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.card h3{margin:14px 0 6px;font-size:16px;font-weight:550;letter-spacing:-.025em}
+.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.card .n{font-size:38px;letter-spacing:-.06em;font-weight:500}
+.lbl{font-size:12px;color:var(--muted)}
+/* timeline */
+.tl{position:relative;padding-left:30px}
+.tl:before{content:"";position:absolute;left:4px;top:12px;bottom:12px;width:1px;background:var(--line)}
+.it{position:relative;display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;padding:16px 0}
+.it:before{content:"";position:absolute;left:-30px;top:50%;width:9px;height:9px;margin-top:-4px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px rgba(109,131,255,.15)}
+.it .t{font-size:12px;color:var(--muted)}
+.it strong{font-weight:550;font-size:14px}.it small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
+/* checklist */
+.check{display:flex;gap:12px;align-items:start;padding:13px 0;border-bottom:1px solid var(--line)}
+.check:last-child{border:0}
+.box{width:17px;height:17px;border:1px solid #5a5a54;border-radius:5px;flex:none;margin-top:1px;position:relative}
+.check.done .box{background:var(--blue);border-color:var(--blue)}
+.check.done .box:after{content:"";position:absolute;width:7px;height:4px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg);left:4px;top:4px}
+.check.done strong{text-decoration:line-through;color:var(--muted)}
+.check strong{font-weight:550;font-size:13px}.check small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.bar{height:4px;background:#2a2a25;border-radius:9px;overflow:hidden;margin:14px 0 8px}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:9px}
+/* segmented tabs */
+.seg{display:inline-flex;gap:2px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;margin-bottom:22px;max-width:100%;overflow:auto}
+.seg button{border:0;background:none;color:var(--muted);padding:8px 16px;border-radius:999px;font-size:13px;white-space:nowrap}
+.seg button.active{background:var(--paper);color:var(--ink);font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:#aaa69d}
+/* trips */
+.trip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.trip{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.trip:hover{border-color:rgba(255,255,255,.2)}
+.cover{height:160px;background:linear-gradient(135deg,#c9d0e9,#e8e3d8 50%,#aeb8c8);position:relative}
+.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.35))}
+.cover span{position:absolute;left:18px;bottom:14px;color:#fff;font-size:12px;z-index:1}
+.trip .b{padding:20px}.trip h3{margin:0;font-size:24px;letter-spacing:-.045em;font-weight:500}
+.trip p{margin:6px 0 0;color:var(--muted);font-size:12px}
+.back{border:0;background:none;color:var(--muted);padding:0 0 18px;font-size:13px}
+.hero2{background:var(--paper);color:var(--ink);border-radius:26px;padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.hero2 h2{margin:10px 0}.hero2 p{color:#6e6b64;line-height:1.6;max-width:420px;margin:0}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{border:1px solid rgba(20,20,20,.12);border-radius:14px;padding:16px}
+.kpi b{display:block;font-size:26px;font-weight:500;letter-spacing:-.05em}.kpi small{color:#77736b;font-size:11px}
+.dc{display:grid;grid-template-columns:1.3fr .7fr;gap:12px}
+/* chat */
+.chat{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 64px);max-width:1120px;margin:0 auto}
+.clist{border-right:1px solid var(--line);padding:24px 14px}
+.clist h3{font-size:13px;margin:0 8px 14px;font-weight:550}
+.ci{display:flex;gap:10px;align-items:center;padding:11px;border-radius:12px}
+.ci.active{background:var(--card)}.ci img{width:28px;height:28px;object-fit:contain}
+.ci strong{font-size:12px;font-weight:550}.ci small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.cmain{display:flex;flex-direction:column;min-width:0}
+.chead{padding:16px 26px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.chead img{width:30px;height:30px;object-fit:contain}.chead strong{font-size:13px}.chead small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.msgs{flex:1;overflow:auto;padding:30px 8%;display:flex;flex-direction:column;gap:16px}
+.msg{max-width:600px;line-height:1.6;font-size:14px}
+.msg p{margin:0 0 9px}.msg p:last-child{margin:0}
+.msg.u{align-self:flex-end;background:var(--card2);border:1px solid var(--line);padding:12px 16px;border-radius:18px 18px 4px 18px}
+.sug{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.sug button{border:1px solid var(--line);background:var(--card);color:#aaa;border-radius:999px;padding:7px 12px;font-size:12px}
+.sug button:hover{color:var(--text)}
+.cmp{padding:14px 8% 18px;border-top:1px solid var(--line)}
+.comp{display:flex;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 18px}
+.comp input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text)}
+.comp button{width:38px;height:38px;border:0;border-radius:50%;background:var(--paper);color:#111}
+/* profile */
+.pg{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px}
+.pc{background:var(--paper);color:var(--ink);border-radius:22px;padding:28px}
+.pc img{width:72px;height:72px;object-fit:contain}.pc h2{font-size:30px;margin:16px 0 8px}
+.pc p{color:#6f6c65;font-size:13px;line-height:1.6;margin:0 0 18px}
+.pref{display:flex;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
+.pref:last-child{border:0}.pref strong{font-weight:550;font-size:13px}.pref span{color:var(--muted);font-size:13px;text-align:right}
+footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted);font-size:12px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.mbar{display:none}
+@media(max-width:900px){
+ .hero .grid,.split,.hero2,.dc,.pg{grid-template-columns:1fr}
+ .phone{margin:0;max-width:none;min-height:320px}
+ .cards{grid-template-columns:1fr}
+ .chat{grid-template-columns:1fr}.clist{display:none}
+}
+@media(max-width:700px){
+ .nav,.right .btn{display:none}
+ .wrap{padding:0 18px}
+ section.s{padding:64px 0}.hero{padding:48px 0 64px}
+ .trip-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.stat{border-right:0;border-bottom:1px solid var(--line)}
+ .page{padding-bottom:84px}
+ .chat{height:calc(100vh - 64px - 84px)}
+ .mbar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;height:62px;z-index:50;background:rgba(26,26,22,.95);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:20px;justify-content:space-around;align-items:center}
+ .mbar button{border:0;background:none;color:var(--muted);font-size:11px;padding:8px 12px}
+ .mbar button.active{color:var(--text)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <img src="/demo/travy.png" alt="">
-      <strong>Travelly</strong>
+<header><div class="wrap">
+  <button class="brand" onclick="go('home')"><img src="/demo/travy.png" alt="">Travelly</button>
+  <nav class="nav" id="nav"></nav>
+  <div class="right">
+    <button class="btn primary" onclick="go('trip')">Nuevo viaje</button>
+    <button class="avatar" onclick="go('profile')" aria-label="Mi perfil">L</button>
+  </div>
+</div></header>
+
+<main>
+<!-- INICIO -->
+<div class="page active" id="home">
+  <section class="hero"><div class="wrap grid">
+    <div>
+      <h1>Hola, Luciano.<br>Tu viaje, en un solo lugar.</h1>
+      <p class="lead">Travelly reúne equipaje, documentos, reservas e itinerario. Y Travy te ayuda a decidir qué hacer en cada momento.</p>
+      <div class="cta-row"><button class="btn primary" onclick="go('chat')">Preguntarle a Travy</button><button class="btn" onclick="go('trips')">Ver mis viajes</button></div>
     </div>
-    <nav class="nav" id="nav"></nav>
-    <div class="side-bottom">
-      <button class="nav" style="border:0;background:none;padding:0" onclick="go('profile')">
-        <span style="display:none"></span>
-      </button>
-      <div class="profile-mini" onclick="go('profile')" style="cursor:pointer">
-        <div class="avatar-circle">L</div>
-        <div><strong>Luciano</strong><span>Mi perfil</span></div>
-      </div>
+    <div class="phone">
+      <div class="top"><div><small>Próximo viaje</small><h3>Japón</h3><small>12 días · octubre 2026</small></div><span class="tag">En preparación</span></div>
+      <img src="/demo/travy.png" alt="" style="width:84px;height:84px;object-fit:contain;align-self:center">
+      <div class="route"><div><b>Buenos Aires</b><span>3 oct</span></div><div style="color:#888">→</div><div style="text-align:right"><b>Tokio</b><span>4 oct</span></div></div>
     </div>
-  </aside>
+  </div></section>
 
-  <main>
-    <header class="topbar">
-      <div class="topbar-title" id="topTitle">Inicio</div>
-      <div class="top-actions">
-        <button class="ghost" onclick="go('chat')">Hablar con Travy</button>
-        <button class="primary" onclick="go('trip')">+ Nuevo viaje</button>
-      </div>
-    </header>
+  <section class="s alt"><div class="wrap">
+    <div class="head"><h2>Lo que necesita<br>tu atención.</h2><p class="lead">Travelly encontró esto para vos.</p></div>
+    <div class="stats" style="margin-bottom:12px">
+      <div class="stat"><b>11</b><span>días para salir</span></div>
+      <div class="stat"><b>72%</b><span>viaje preparado</span></div>
+      <div class="stat"><b>18</b><span>cosas organizadas</span></div>
+    </div>
+    <div class="cards">
+      <article class="card"><div class="lbl">Equipaje</div><div class="n">7</div><h3>cosas por preparar</h3><p>El clima de Tokio cambia durante tu viaje. Revisá la lista antes de cerrar la valija.</p></article>
+      <article class="card"><div class="lbl">Documentos</div><div class="n">2</div><h3>documentos para revisar</h3><p>Pasaporte y requisitos de entrada están pendientes de confirmar.</p></article>
+      <article class="card"><div class="lbl">Itinerario</div><div class="n">3</div><h3>decisiones abiertas</h3><p>Hay tres momentos del viaje donde todavía podés elegir qué hacer.</p></article>
+    </div>
+  </div></section>
 
-    <section class="page active" id="home">
-      <div class="content">
-        <div class="hero-grid">
-          <div class="welcome">
-            <div class="eyebrow">Tu viaje, en contexto</div>
-            <h1>Hola, Luciano.</h1>
-            <p>Travelly reúne lo importante de tu viaje y Travy te ayuda a decidir qué hacer en cada momento.</p>
-            <div class="welcome-actions">
-              <button class="primary" onclick="go('chat')">Preguntarle a Travy</button>
-              <button class="secondary" onclick="go('trips')">Ver mis viajes</button>
-            </div>
-          </div>
-
-          <div class="next-card">
-            <div class="next-top">
-              <div><div class="eyebrow">Próximo viaje</div><h2>Japón</h2><div class="next-meta">12 días · octubre 2026</div></div>
-              <span class="tag">En preparación</span>
-            </div>
-            <div class="trip-route">
-              <div><div class="city">Buenos Aires</div><div class="date">03 OCT</div></div>
-              <div class="arrow">→</div>
-              <div style="text-align:right"><div class="city">Tokio</div><div class="date">04 OCT</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="stats">
-          <div class="stat"><strong>11</strong><span>días para salir</span></div>
-          <div class="stat"><strong>72%</strong><span>viaje preparado</span></div>
-          <div class="stat"><strong>18</strong><span>cosas organizadas</span></div>
-        </div>
-
-        <div class="section-head">
-          <div><h2>Lo que necesita tu atención</h2><p>Travelly encontró esto para vos.</p></div>
-          <button class="link-btn" onclick="go('trip')">Ver viaje →</button>
-        </div>
-        <div class="cards">
-          <article class="card"><div class="card-label">Equipaje</div><div class="number">7</div><h3>cosas por preparar</h3><p>El clima de Tokio cambia durante tu viaje. Revisá la lista antes de cerrar la valija.</p></article>
-          <article class="card"><div class="card-label">Documentos</div><div class="number">2</div><h3>documentos para revisar</h3><p>Pasaporte y requisitos de entrada están pendientes de confirmar.</p></article>
-          <article class="card"><div class="card-label">Itinerario</div><div class="number">3</div><h3>decisiones abiertas</h3><p>Hay tres momentos del viaje donde todavía podés elegir qué hacer.</p></article>
-        </div>
-
-        <div class="section-head">
-          <div><h2>Tu próximo día</h2><p>Una vista rápida del itinerario.</p></div>
-          <button class="link-btn" onclick="go('trip')">Abrir itinerario →</button>
-        </div>
-        <div class="two-col">
-          <div class="card list">
-            <div class="row"><div class="time">09:00</div><div><strong>Shibuya</strong><small>Desayuno + paseo</small></div><span class="tag">Plan</span></div>
-            <div class="row"><div class="time">12:30</div><div><strong>Meiji Jingu</strong><small>Cultura</small></div><span class="tag">2 h</span></div>
-            <div class="row"><div class="time">16:00</div><div><strong>Harajuku</strong><small>Libre</small></div><span class="tag">Travy</span></div>
-            <div class="row"><div class="time">20:00</div><div><strong>Omakase</strong><small>Cena</small></div><span class="tag">Reserva</span></div>
-          </div>
-          <div class="card">
-            <div class="card-label">Travy</div>
-            <h3 style="font-size:20px">¿Querés cambiar algo?</h3>
-            <p>Podés preguntarme por el clima, una alternativa para la tarde, dónde comer o cómo llegar. Tengo tu viaje en contexto.</p>
-            <button class="primary" style="margin-top:18px" onclick="go('chat')">Abrir chat</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="page" id="chat">
-      <div class="chat-layout">
-        <aside class="chat-list">
-          <h2>Conversaciones</h2>
-          <div class="chat-item active"><img class="mini-avatar" src="/demo/travy.png" alt=""><div><strong>Travy</strong><small>Tu viaje a Japón</small></div></div>
-          <div class="chat-item"><div class="avatar-circle">+</div><div><strong>Nueva conversación</strong><small>Empezá algo nuevo</small></div></div>
-        </aside>
-        <div class="chat-main">
-          <div class="chat-head"><img src="/demo/travy.png" alt=""><div><strong>Travy</strong><small>Conoce tu viaje · disponible ahora</small></div></div>
-          <div class="messages" id="messages">
-            <div class="msg travy"><p>Hola, Luciano. Ya tengo en contexto tu viaje a Japón.</p><p>¿Qué querés resolver?</p><div class="suggestions"><button onclick="ask('¿Qué puedo hacer mañana?')">Qué hacer mañana</button><button onclick="ask('¿Qué llevo en la valija?')">Qué llevo</button><button onclick="ask('¿Dónde puedo comer?')">Dónde comer</button></div></div>
-            <div class="msg user"><span>¿Qué me recomendás para mi primer día en Tokio?</span></div>
-            <div class="msg travy"><p>Yo haría un día tranquilo para adaptarte. Empezaría por Shibuya, seguiría por Meiji Jingu y dejaría Harajuku para la tarde.</p><p>Además, tenés una reserva cerca de Shinjuku a las 20:00, así que no te conviene alejarte demasiado.</p></div>
-          </div>
-          <div class="chat-composer">
-            <form class="composer" onsubmit="send(event)">
-              <input id="chatInput" autocomplete="off" placeholder="Preguntale algo a Travy...">
-              <button aria-label="Enviar">→</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="page" id="trips">
-      <div class="content">
-        <div class="trips-head">
-          <div><div class="eyebrow">Travelly</div><h1>Mis viajes</h1></div>
-          <button class="primary" onclick="go('trip')">+ Nuevo viaje</button>
-        </div>
-        <div class="trip-grid">
-          <article class="trip-card" onclick="go('trip')">
-            <div class="trip-cover"><div class="cover-label">TOKIO · JAPÓN</div></div>
-            <div class="trip-body"><h3>Japón</h3><p>04 OCT — 15 OCT 2026 · 12 días</p><div class="trip-footer"><div class="progress"><span></span></div><small>72%</small></div></div>
-          </article>
-          <article class="trip-card">
-            <div class="trip-cover" style="background:linear-gradient(135deg,#d9d2c4,#c7d2c7 55%,#9da8a0)"><div class="cover-label">ROMA · ITALIA</div></div>
-            <div class="trip-body"><h3>Roma</h3><p>Próximamente · Sin fechas definidas</p><div class="trip-footer"><div class="progress"><span style="width:18%"></span></div><small>18%</small></div></div>
-          </article>
-        </div>
-        <div class="section-head"><div><h2>Viajes archivados</h2><p>Todo lo que ya viviste.</p></div></div>
-        <div class="card list">
-          <div class="row"><div class="time">2025</div><div><strong>Madrid</strong><small>España · 8 días</small></div><span class="tag">Completado</span></div>
-          <div class="row"><div class="time">2024</div><div><strong>Bariloche</strong><small>Argentina · 6 días</small></div><span class="tag">Completado</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="page" id="trip">
-      <div class="content">
-        <button class="back" onclick="go('trips')">← Mis viajes</button>
-        <div class="detail-head">
-          <div><div class="eyebrow">Próximo viaje</div><h1>Japón</h1></div>
-          <div class="top-actions"><button class="secondary" onclick="go('chat')">Preguntarle a Travy</button></div>
-        </div>
-        <div class="detail-hero">
-          <div><div class="eyebrow" style="color:#77746c">04 OCT — 15 OCT 2026</div><h2>Tokio y más.</h2><p>Tu viaje está tomando forma. Travelly reúne itinerario, equipaje, documentos, reservas y recomendaciones en un solo lugar.</p><div class="route-line"><span></span><strong>12 días</strong><span></span></div></div>
-          <div class="detail-kpis"><div class="kpi"><strong>11</strong><small>días para salir</small></div><div class="kpi"><strong>72%</strong><small>preparado</small></div><div class="kpi"><strong>18</strong><small>elementos</small></div><div class="kpi"><strong>3</strong><small>decisiones</small></div></div>
-        </div>
-        <div class="tabs" id="tripTabs">
-          <button class="active" onclick="tab(this,'itinerary')">Itinerario</button>
-          <button onclick="tab(this,'luggage')">Equipaje</button>
-          <button onclick="tab(this,'docs')">Documentos</button>
-          <button onclick="tab(this,'reservations')">Reservas</button>
-        </div>
-        <div class="detail-content" id="itinerary">
-          <div class="card"><h3 class="section-title">04 OCT · Tokio</h3><div class="timeline list">
-            <div class="row"><div class="time">09:00</div><div><strong>Llegada</strong><small>Narita → Shinjuku</small></div><span class="tag">Transporte</span></div>
-            <div class="row"><div class="time">13:00</div><div><strong>Hotel</strong><small>Check-in y descanso</small></div><span class="tag">Reserva</span></div>
-            <div class="row"><div class="time">17:30</div><div><strong>Shibuya</strong><small>Paseo sin apuro</small></div><span class="tag">Travy</span></div>
-            <div class="row"><div class="time">20:00</div><div><strong>Cena</strong><small>Reserva confirmada</small></div><span class="tag">Reserva</span></div>
-          </div></div>
-          <div class="card"><h3 class="section-title">Próximas decisiones</h3><div class="check-list">
-            <div class="check done"><div class="check-box"></div><div><strong>Hotel confirmado</strong><small>Shinjuku</small></div></div>
-            <div class="check done"><div class="check-box"></div><div><strong>Vuelo guardado</strong><small>Buenos Aires → Tokio</small></div></div>
-            <div class="check"><div class="check-box"></div><div><strong>Elegir actividad</strong><small>06 OCT · tarde</small></div></div>
-            <div class="check"><div class="check-box"></div><div><strong>Revisar equipaje</strong><small>Antes de salir</small></div></div>
-          </div></div>
-        </div>
-        <div class="detail-content" id="luggage" style="display:none"><div class="card"><h3 class="section-title">Equipaje</h3><div class="check-list">
-          <div class="check done"><div class="check-box"></div><div><strong>Pasaporte</strong><small>Documentación</small></div></div><div class="check done"><div class="check-box"></div><div><strong>Adaptador</strong><small>Electrónica</small></div></div><div class="check"><div class="check-box"></div><div><strong>Campera liviana</strong><small>Clima variable</small></div></div><div class="check"><div class="check-box"></div><div><strong>Zapatillas cómodas</strong><small>Mucho caminar</small></div></div>
-        </div></div><div class="card"><div class="card-label">Travy</div><h3>Te faltan 2 cosas.</h3><p>Por el clima y el tipo de viaje, priorizaría una capa liviana y calzado cómodo.</p></div></div>
-        <div class="detail-content" id="docs" style="display:none"><div class="card"><h3 class="section-title">Documentos</h3><div class="check-list"><div class="check done"><div class="check-box"></div><div><strong>Pasaporte</strong><small>Vigencia revisada</small></div></div><div class="check"><div class="check-box"></div><div><strong>Requisitos de entrada</strong><small>Revisar antes del viaje</small></div></div><div class="check"><div class="check-box"></div><div><strong>Seguro de viaje</strong><small>Agregar documento</small></div></div></div></div></div>
-        <div class="detail-content" id="reservations" style="display:none"><div class="card"><h3 class="section-title">Reservas</h3><div class="list"><div class="row"><div class="time">04 OCT</div><div><strong>Hotel en Shinjuku</strong><small>Check-in 13:00</small></div><span class="tag">Confirmada</span></div><div class="row"><div class="time">04 OCT</div><div><strong>Cena</strong><small>20:00 · Shinjuku</small></div><span class="tag">Confirmada</span></div></div></div></div>
-      </div>
-    </section>
-
-    <section class="page" id="profile">
-      <div class="content">
-        <div class="trips-head"><div><div class="eyebrow">Travelly</div><h1>Tu perfil</h1></div></div>
-        <div class="profile-grid">
-          <div class="profile-card"><img src="/demo/travy.png" alt=""><h2>Luciano</h2><p>Travelly usa tu perfil para entender mejor tus decisiones de viaje. No hace falta completar un cuestionario interminable.</p><button class="primary" style="margin-top:10px">Editar perfil</button></div>
-          <div class="card"><h3 class="section-title">Cómo viajás</h3>
-            <div class="preference"><strong>Compañía</strong><span>En pareja</span></div>
-            <div class="preference"><strong>Intereses</strong><span>Gastronomía · Cultura · Diseño</span></div>
-            <div class="preference"><strong>Ritmo</strong><span>Equilibrado</span></div>
-            <div class="preference"><strong>Movilidad</strong><span>Caminar + transporte</span></div>
-            <div class="preference"><strong>Presupuesto</strong><span>Medio</span></div>
-          </div>
-        </div>
-        <div class="section-head"><div><h2>Privacidad</h2><p>Controlá cómo Travelly usa tus datos.</p></div></div>
-        <div class="card">
-          <div class="preference"><strong>Cookies opcionales</strong><span>Permitidas · Configurar</span></div>
-          <div class="preference"><strong>Personalización</strong><span>Activada</span></div>
-          <div class="preference"><strong>Notificaciones</strong><span>Activadas</span></div>
-        </div>
-      </div>
-    </section>
-  </main>
+  <section class="s"><div class="wrap split">
+    <div>
+      <h2>Tu próximo día,<br>organizado.</h2>
+      <p class="lead">Una vista rápida del itinerario. Si algo cambia, Travy lo resuelve con una frase.</p>
+      <div class="cta-row"><button class="btn" onclick="go('trip')">Abrir itinerario</button><button class="btn primary" onclick="go('chat')">Abrir chat</button></div>
+    </div>
+    <div class="panel"><div class="tl">
+      <div class="it"><div class="t">09:00</div><div><strong>Shibuya</strong><small>Desayuno + paseo</small></div><span class="tag d">Plan</span></div>
+      <div class="it"><div class="t">12:30</div><div><strong>Meiji Jingu</strong><small>Cultura</small></div><span class="tag d">2 h</span></div>
+      <div class="it"><div class="t">16:00</div><div><strong>Harajuku</strong><small>Libre</small></div><span class="tag d">Travy</span></div>
+      <div class="it"><div class="t">20:00</div><div><strong>Omakase</strong><small>Cena</small></div><span class="tag d">Reserva</span></div>
+    </div></div>
+  </div></section>
 </div>
 
-<nav class="mobile-bar" id="mobileNav"></nav>
+<!-- CHAT -->
+<div class="page" id="chat"><div class="chat">
+  <aside class="clist"><h3>Conversaciones</h3>
+    <div class="ci active"><img src="/demo/travy.png" alt=""><div><strong>Travy</strong><small>Tu viaje a Japón</small></div></div>
+    <div class="ci"><div class="avatar">+</div><div><strong>Nueva conversación</strong><small>Empezá algo nuevo</small></div></div>
+  </aside>
+  <div class="cmain">
+    <div class="chead"><img src="/demo/travy.png" alt=""><div><strong>Travy</strong><small>Conoce tu viaje · disponible ahora</small></div></div>
+    <div class="msgs" id="messages">
+      <div class="msg"><p>Hola, Luciano. Ya tengo en contexto tu viaje a Japón.</p><p>¿Qué querés resolver?</p><div class="sug"><button onclick="ask('¿Qué puedo hacer mañana?')">Qué hacer mañana</button><button onclick="ask('¿Qué llevo en la valija?')">Qué llevo</button><button onclick="ask('¿Dónde puedo comer?')">Dónde comer</button></div></div>
+      <div class="msg u">¿Qué me recomendás para mi primer día en Tokio?</div>
+      <div class="msg"><p>Yo haría un día tranquilo para adaptarte. Empezaría por Shibuya, seguiría por Meiji Jingu y dejaría Harajuku para la tarde.</p><p>Además, tenés una reserva cerca de Shinjuku a las 20:00, así que no te conviene alejarte demasiado.</p></div>
+    </div>
+    <div class="cmp"><form class="comp" onsubmit="send(event)"><input id="chatInput" autocomplete="off" placeholder="Preguntale algo a Travy..."><button aria-label="Enviar">→</button></form></div>
+  </div>
+</div></div>
+
+<!-- MIS VIAJES -->
+<div class="page" id="trips">
+  <section class="s" style="padding-bottom:48px"><div class="wrap">
+    <div class="head" style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap"><h2>Mis viajes</h2><button class="btn primary" onclick="go('trip')">Nuevo viaje</button></div>
+    <div class="trip-grid">
+      <article class="trip" onclick="go('trip')"><div class="cover"><span>Tokio, Japón</span></div><div class="b"><h3>Japón</h3><p>4 – 15 oct 2026 · 12 días</p><div class="bar"><i style="width:72%"></i></div><div class="lbl">72% preparado</div></div></article>
+      <article class="trip"><div class="cover" style="background:linear-gradient(135deg,#d9d2c4,#c7d2c7 55%,#9da8a0)"><span>Roma, Italia</span></div><div class="b"><h3>Roma</h3><p>Sin fechas definidas</p><div class="bar"><i style="width:18%"></i></div><div class="lbl">18% preparado</div></div></article>
+    </div>
+  </div></section>
+  <section class="s alt"><div class="wrap split">
+    <div><h2>Viajes archivados.</h2><p class="lead">Todo lo que ya viviste.</p></div>
+    <div class="panel">
+      <div class="it" style="padding:14px 0"><div class="t">2025</div><div><strong>Madrid</strong><small>España · 8 días</small></div><span class="tag d">Completado</span></div>
+      <div class="it" style="padding:14px 0"><div class="t">2024</div><div><strong>Bariloche</strong><small>Argentina · 6 días</small></div><span class="tag d">Completado</span></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- VIAJE ACTUAL -->
+<div class="page" id="trip">
+  <section class="s" style="padding-top:48px"><div class="wrap">
+    <button class="back" onclick="go('trips')">← Mis viajes</button>
+    <div class="hero2">
+      <div><small style="color:#77746c">4 – 15 oct 2026 · 12 días</small><h2>Japón: Tokio y más.</h2><p>Tu viaje está tomando forma. Itinerario, equipaje, documentos y reservas, todo junto.</p><button class="btn" style="margin-top:22px;color:var(--ink);border-color:rgba(0,0,0,.2)" onclick="go('chat')">Preguntarle a Travy</button></div>
+      <div class="kpis"><div class="kpi"><b>11</b><small>días para salir</small></div><div class="kpi"><b>72%</b><small>preparado</small></div><div class="kpi"><b>18</b><small>elementos</small></div><div class="kpi"><b>3</b><small>decisiones</small></div></div>
+    </div>
+  </div></section>
+  <section class="s alt" style="padding-top:56px"><div class="wrap">
+    <div class="seg" id="tripTabs">
+      <button class="active" onclick="tab(this,'itinerary')">Itinerario</button><button onclick="tab(this,'luggage')">Equipaje</button><button onclick="tab(this,'docs')">Documentos</button><button onclick="tab(this,'reservations')">Reservas</button>
+    </div>
+    <div class="dc" id="itinerary">
+      <div class="panel"><div class="lbl" style="margin-bottom:6px">4 oct · Tokio</div><div class="tl">
+        <div class="it"><div class="t">09:00</div><div><strong>Llegada</strong><small>Narita → Shinjuku</small></div><span class="tag d">Transporte</span></div>
+        <div class="it"><div class="t">13:00</div><div><strong>Hotel</strong><small>Check-in y descanso</small></div><span class="tag d">Reserva</span></div>
+        <div class="it"><div class="t">17:30</div><div><strong>Shibuya</strong><small>Paseo sin apuro</small></div><span class="tag d">Travy</span></div>
+        <div class="it"><div class="t">20:00</div><div><strong>Cena</strong><small>Reserva confirmada</small></div><span class="tag d">Reserva</span></div>
+      </div></div>
+      <div class="panel"><div class="lbl">Próximas decisiones</div>
+        <div class="check done"><div class="box"></div><div><strong>Hotel confirmado</strong><small>Shinjuku</small></div></div>
+        <div class="check done"><div class="box"></div><div><strong>Vuelo guardado</strong><small>Buenos Aires → Tokio</small></div></div>
+        <div class="check"><div class="box"></div><div><strong>Elegir actividad</strong><small>6 oct · tarde</small></div></div>
+        <div class="check"><div class="box"></div><div><strong>Revisar equipaje</strong><small>Antes de salir</small></div></div>
+      </div>
+    </div>
+    <div class="dc" id="luggage" style="display:none">
+      <div class="panel"><div class="lbl">Equipaje · Tokio</div><div class="bar"><i style="width:50%"></i></div>
+        <div class="check done"><div class="box"></div><div><strong>Pasaporte</strong><small>Documentación</small></div></div>
+        <div class="check done"><div class="box"></div><div><strong>Adaptador</strong><small>Electrónica</small></div></div>
+        <div class="check"><div class="box"></div><div><strong>Campera liviana</strong><small>Clima variable</small></div></div>
+        <div class="check"><div class="box"></div><div><strong>Zapatillas cómodas</strong><small>Mucho caminar</small></div></div>
+      </div>
+      <div class="card"><div class="lbl">Travy</div><h3>Te faltan 2 cosas.</h3><p>Por el clima y el tipo de viaje, priorizaría una capa liviana y calzado cómodo.</p></div>
+    </div>
+    <div id="docs" style="display:none"><div class="panel" style="max-width:640px"><div class="lbl">Documentos</div>
+      <div class="check done"><div class="box"></div><div><strong>Pasaporte</strong><small>Vigencia revisada</small></div></div>
+      <div class="check"><div class="box"></div><div><strong>Requisitos de entrada</strong><small>Revisar antes del viaje</small></div></div>
+      <div class="check"><div class="box"></div><div><strong>Seguro de viaje</strong><small>Agregar documento</small></div></div>
+    </div></div>
+    <div id="reservations" style="display:none"><div class="panel" style="max-width:640px"><div class="lbl">Reservas</div><div class="tl">
+      <div class="it"><div class="t">4 oct</div><div><strong>Hotel en Shinjuku</strong><small>Check-in 13:00</small></div><span class="tag d">Confirmada</span></div>
+      <div class="it"><div class="t">4 oct</div><div><strong>Cena</strong><small>20:00 · Shinjuku</small></div><span class="tag d">Confirmada</span></div>
+    </div></div></div>
+  </div></section>
+</div>
+
+<!-- PERFIL -->
+<div class="page" id="profile">
+  <section class="s" style="padding-bottom:48px"><div class="wrap">
+    <div class="head"><h2>Tu perfil</h2></div>
+    <div class="pg">
+      <div class="pc"><img src="/demo/travy.png" alt=""><h2>Luciano</h2><p>Travelly usa tu perfil para entender mejor tus decisiones de viaje. No hace falta completar un cuestionario interminable.</p><button class="btn primary" style="background:var(--ink);color:#fff;border-color:var(--ink)">Editar perfil</button></div>
+      <div class="panel"><div class="lbl">Cómo viajás</div>
+        <div class="pref"><strong>Compañía</strong><span>En pareja</span></div>
+        <div class="pref"><strong>Intereses</strong><span>Gastronomía, cultura, diseño</span></div>
+        <div class="pref"><strong>Ritmo</strong><span>Equilibrado</span></div>
+        <div class="pref"><strong>Movilidad</strong><span>Caminar + transporte</span></div>
+        <div class="pref"><strong>Presupuesto</strong><span>Medio</span></div>
+      </div>
+    </div>
+  </div></section>
+  <section class="s alt"><div class="wrap split">
+    <div><h2>Privacidad.</h2><p class="lead">Controlá cómo Travelly usa tus datos.</p></div>
+    <div class="panel">
+      <div class="pref"><strong>Cookies opcionales</strong><span>Permitidas · Configurar</span></div>
+      <div class="pref"><strong>Personalización</strong><span>Activada</span></div>
+      <div class="pref"><strong>Notificaciones</strong><span>Activadas</span></div>
+    </div>
+  </div></section>
+</div>
+</main>
+
+<footer><div class="wrap"><span>Travelly · Tu viaje. Mucho más fácil.</span><span>© 2026 Travelly</span></div></footer>
+<nav class="mbar" id="mobileNav"></nav>
 
 <script>
-  const iconPaths = {
-    home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
-    chat:'<path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 9 9 0 0 1-4-.9L4 20l1.4-3.3A7.5 7.5 0 1 1 20 11.5Z"/>',
-    trips:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M8 5V3h8v2M3 10h18M9 14h6"/>',
-    bag:'<path d="M6 7h12l1 13H5L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/>',
-    docs:'<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>',
-    user:'<circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/>'
-  };
-  const navItems=[
-    ['home','Inicio','home'],
-    ['chat','Travy','chat'],
-    ['trips','Mis viajes','trips'],
-    ['trip','Viaje actual','bag'],
-    ['profile','Perfil','user']
-  ];
-  const labels={home:'Inicio',chat:'Travy',trips:'Mis viajes',trip:'Viaje actual',profile:'Perfil'};
-  const nav=document.getElementById('nav');
-  const mobile=document.getElementById('mobileNav');
-  function svg(name){
-    return '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+iconPaths[name]+'</svg>';
-  }
-  nav.innerHTML=navItems.map(([id,label,ic])=>`<button data-route="${id}" onclick="go('${id}')">${svg(ic)}<span>${label}</span></button>`).join('');
-  mobile.innerHTML=navItems.slice(0,4).map(([id,label,ic])=>`<button data-route="${id}" onclick="go('${id}')">${svg(ic)}<span>${label}</span></button>`).join('');
-
-  function go(id){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    const page=document.getElementById(id);
-    if(page) page.classList.add('active');
-    document.querySelectorAll('[data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===id));
-    document.getElementById('topTitle').textContent=labels[id]||'Travelly';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-
-  function ask(text){
-    const input=document.getElementById('chatInput');
-    input.value=text;
-    input.focus();
-  }
-  function send(e){
-    e.preventDefault();
-    const input=document.getElementById('chatInput');
-    const text=input.value.trim();
-    if(!text)return;
-    const messages=document.getElementById('messages');
-    const user=document.createElement('div');
-    user.className='msg user';
-    user.textContent=text;
-    messages.appendChild(user);
-    input.value='';
-    setTimeout(()=>{
-      const reply=document.createElement('div');
-      reply.className='msg travy';
-      reply.innerHTML='<p>Lo tengo en cuenta con tu viaje a Japón. En una app conectada a tus datos reales, acá Travy te respondería usando tus fechas, reservas, preferencias y el contexto del día.</p>';
-      messages.appendChild(reply);
-      messages.scrollTop=messages.scrollHeight;
-    },450);
-  }
-
-  function tab(btn,id){
-    document.querySelectorAll('#tripTabs button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    ['itinerary','luggage','docs','reservations'].forEach(x=>{
-      const el=document.getElementById(x);
-      if(el) el.style.display=x===id?'grid':'none';
-    });
-  }
+const items=[['home','Inicio'],['chat','Travy'],['trips','Mis viajes'],['trip','Viaje actual']];
+const html=items.map(([id,l])=>`<button data-route="${id}" onclick="go('${id}')">${l}</button>`).join('');
+document.getElementById('nav').innerHTML=html;
+document.getElementById('mobileNav').innerHTML=html;
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const p=document.getElementById(id); if(p)p.classList.add('active');
+  document.querySelectorAll('[data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===id));
+  document.querySelector('footer').style.display=id==='chat'?'none':'';
+  window.scrollTo({top:0});
+}
+function ask(t){const i=document.getElementById('chatInput');i.value=t;i.focus()}
+function send(e){
+  e.preventDefault();
+  const i=document.getElementById('chatInput'),t=i.value.trim(); if(!t)return;
+  const m=document.getElementById('messages');
+  const u=document.createElement('div');u.className='msg u';u.textContent=t;m.appendChild(u);i.value='';
+  setTimeout(()=>{const r=document.createElement('div');r.className='msg';
+    r.innerHTML='<p>Lo tengo en cuenta con tu viaje a Japón. En una app conectada a tus datos reales, acá Travy te respondería usando tus fechas, reservas, preferencias y el contexto del día.</p>';
+    m.appendChild(r);m.scrollTop=m.scrollHeight;},450);
+  m.scrollTop=m.scrollHeight;
+}
+function tab(b,id){
+  document.querySelectorAll('#tripTabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  ['itinerary','luggage','docs','reservations'].forEach(x=>{const el=document.getElementById(x);if(el)el.style.display=x===id?(x==='itinerary'||x==='luggage'?'grid':'block'):'none'});
+}
+go('home');
 </script>
 </body>
 </html>

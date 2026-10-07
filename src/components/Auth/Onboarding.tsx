@@ -9,12 +9,6 @@ const TELEGRAM_URL = "https://t.me/TravyBot";
 const RESEND_SECONDS = 60;
 const CODE_LENGTH = 6;
 
-// Si tenés una pose feliz de Travy, ponela en TRAVY_HAPPY_SRC.
-const TRAVY_SRC = "/demo/travy.png";
-const TRAVY_HAPPY_SRC = "/demo/travy.png";
-
-// El mail del registro llega por navigate(..., { state: { email } }).
-// Lo guardamos en sessionStorage para que sobreviva a un refresh.
 const PENDING_EMAIL_KEY = "travelly:pending-email";
 
 function readEmail(state: unknown): string {
@@ -220,6 +214,7 @@ function VerifyEmail({
             // Tiene que tirar error si el código es incorrecto o venció.
             await new Promise((resolve) => setTimeout(resolve, 600));
             setStatus("idle");
+            console.log(value)
             onVerified();
         } catch {
             setStatus("invalid");

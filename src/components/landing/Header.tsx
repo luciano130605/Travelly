@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import { applyTheme, getInitialTheme, type Theme } from '../../lib/theme'
 
 interface Icons {

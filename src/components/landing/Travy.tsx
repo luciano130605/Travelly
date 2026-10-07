@@ -2,9 +2,9 @@ import { useId, useState, type KeyboardEvent } from 'react'
 
 import TravyApp from './TravyApp'
 import TravyWhatsApp from './TravyWhatsApp'
-import { buildTravyWhatsAppUrl } from '../../lib/whatsapp'
+// import { buildTravyWhatsAppUrl } from '../../lib/whatsapp'
 
-const WA_URL = buildTravyWhatsAppUrl()
+// const WA_URL = buildTravyWhatsAppUrl()
 
 const TABS = [
   { id: 'app', label: 'En la app' },

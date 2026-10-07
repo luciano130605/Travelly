@@ -1,11 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-const FOOTER_LINKS = [
-    { to: "/contacto", label: "Contacto" },
-    { to: "/privacidad", label: "Privacidad" },
-    { to: "/terminos", label: "Términos" },
-];
 
 export default function PageShell({ children }: { children: ReactNode }) {
     return (
