@@ -1,237 +1,245 @@
-import type { FormEvent } from "react";
+import {
+  AuthLayout,
+  Divider,
+  Field,
+  GoogleButton,
+  PasswordField,
+  PrimaryButton,
+  inputClass,
+} from "../components/Auth/AuthLayout";
+import { Checkbox } from "../components/Auth/Checkbox";
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { usePageTitle } from "../components/hooks/usePageTitle";
-import type { Mood } from "../components/Auth/AuthShell";
-import AuthShell, { TextField } from "../components/Auth/AuthShell";
-import ChannelCard from "../components/Auth/ChannelCard";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChevronDownIcon } from "@hugeicons/core-free-icons";
 
-type Step = "account" | "channels" | "done";
-type Key = "name" | "email" | "password" | "confirm";
-type Errors = Partial<Record<Key | "form", string>>;
+const COUNTRIES = [
+  { code: "+54", label: "AR +54" },
+  { code: "+598", label: "UY +598" },
+  { code: "+56", label: "CL +56" },
+  { code: "+55", label: "BR +55" },
+  { code: "+595", label: "PY +595" },
+  { code: "+591", label: "BO +591" },
+  { code: "+51", label: "PE +51" },
+  { code: "+57", label: "CO +57" },
+];
 
-const STEPS = ["Tu cuenta", "Canales de Travy", "Tu perfil"];
+type FieldName = "name" | "email" | "phone" | "password" | "terms" | "form";
+type Errors = Partial<Record<FieldName, string>>;
 
-const LINES = {
-  idle: "Hola, soy Travy. Creemos tu cuenta en un minuto.",
-  name: "¿Cómo te llamo?",
-  email: "Lo usás para entrar y para recuperar tu cuenta.",
-  password: "Elegí una que no uses en otros sitios. No miro.",
-  confirm: "Repetila para estar seguros.",
-  error: "Revisá los campos marcados.",
-  loading: "Creando tu cuenta…",
-  channels: "Hablame donde ya hablás con todos: WhatsApp o Telegram.",
-  done: "Listo. Contame cómo viajás y armo todo a tu medida.",
-};
-
-export default function Register() {
-  usePageTitle("Registro");
-
-  const nav = useNavigate();
-  const h1 = useRef<HTMLHeadingElement>(null);
-
-  const [step, setStep] = useState<Step>("account");
+export default function RegisterPage() {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("+54");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [show, setShow] = useState(false);
-  const [focus, setFocus] = useState<Key | null>(null);
+  const [terms, setTerms] = useState(false);
+  const [promos, setPromos] = useState(false); // desmarcado por defecto: el consentimiento tiene que ser explícito
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
-  const [wa, setWa] = useState(false);
-  const [tg, setTg] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
+  const countryRef = useRef<HTMLDivElement>(null);
 
-  // Al cambiar de paso, el foco va al título (útil con teclado y lector de pantalla)
   useEffect(() => {
-    if (step !== "account") h1.current?.focus();
-  }, [step]);
+    if (!countryOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!countryRef.current?.contains(e.target as Node)) setCountryOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setCountryOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [countryOpen]);
 
-  const hasErrors = Object.values(errors).some(Boolean);
-
-  let line = LINES.idle;
-  let mood: Mood = "idle";
-  if (step === "channels") line = LINES.channels;
-  else if (step === "done") (line = LINES.done), (mood = "success");
-  else if (loading) (line = LINES.loading), (mood = "thinking");
-  else if (hasErrors) (line = LINES.error), (mood = "error");
-  else if (focus) {
-    line = LINES[focus];
-    if (focus === "password" || focus === "confirm") mood = "thinking";
-  }
-
-  const bind = (k: Key, value: string, set: (v: string) => void) => ({
-    value,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      set(e.target.value);
-      setErrors((p) => ({ ...p, [k]: undefined, form: undefined }));
-    },
-    onFocus: () => setFocus(k),
-    onBlur: () => setFocus(null),
-  });
+  const selectedCountry = COUNTRIES.find((c) => c.code === country) ?? COUNTRIES[0];
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (loading) return;
-
     const next: Errors = {};
-    if (name.trim().length < 2) next.name = "Decinos cómo te llamás.";
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) next.email = "Escribí un mail válido, por ejemplo nombre@mail.com.";
-    if (password.length < 8) next.password = "Usá al menos 8 caracteres.";
-    if (confirm !== password) next.confirm = "Las contraseñas no coinciden.";
-    setErrors(next);
+    const digits = phone.replace(/\D/g, "");
 
-    const first = (["name", "email", "password", "confirm"] as Key[]).find((k) => next[k]);
-    if (first) {
-      document.getElementById(first)?.focus();
-      return;
-    }
+    if (name.trim().length < 2) next.name = "Decinos cómo te llamás.";
+    if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Revisá el mail, parece incompleto.";
+    // Teléfono opcional: si lo completan, tiene que ser válido
+    if (phone && (digits.length < 8 || digits.length > 12))
+      next.phone = "El número debería tener entre 8 y 12 dígitos, sin el código de país.";
+    if (password.length < 8) next.password = "Usá al menos 8 caracteres.";
+    if (!terms) next.terms = "Necesitás aceptar los términos para crear la cuenta.";
+
+    setErrors(next);
+    if (Object.keys(next).length) return;
 
     setLoading(true);
     try {
-      // TODO: reemplazar por tu llamada real de registro (usá name.trim() y email.trim())
-      await new Promise((r) => setTimeout(r, 1000));
-      setStep("channels");
+      // TODO: reemplazar por tu llamada real
+      // await api.register({
+      //   name,
+      //   email,
+      //   phone: phone ? `${country}${digits}` : undefined,
+      //   password,
+      //   marketingOptIn: promos,
+      // });
+      await new Promise((r) => setTimeout(r, 800));
+      navigate("/onboarding");
     } catch {
-      setErrors({ form: "No pudimos crear tu cuenta. Probá de nuevo en un momento." });
+      setErrors({ form: "No pudimos crear la cuenta. Probá de nuevo en un rato." });
     } finally {
       setLoading(false);
     }
   }
 
-  const current = step === "account" ? 0 : step === "channels" ? 1 : 2;
-  const anyChannel = wa || tg;
-
   return (
-    <AuthShell line={line} mood={mood} steps={STEPS} current={current}>
-      {step === "account" && (
+    <AuthLayout
+      docTitle="Crear cuenta · Travelly"
+      title={<>Empezá a viajar<br />sin el segundo trabajo.</>}
+      subtitle="Con unos pocos datos, Travy ya puede organizar tu viaje."
+      footer={
         <>
-          <h1 className="lg-h1" ref={h1} tabIndex={-1}>Creá tu cuenta.</h1>
-          <p className="lg-sub">Un minuto y Travy empieza a organizarte el viaje.</p>
-
-          <form onSubmit={onSubmit} noValidate className="lg-form">
-            <TextField
-              id="name"
-              label="Nombre"
-              type="text"
-              autoComplete="name"
-              placeholder="¿Cómo te llamás?"
-              error={errors.name}
-              {...bind("name", name, setName)}
-            />
-            <TextField
-              id="email"
-              label="Mail"
-              type="email"
-              autoComplete="email"
-              autoCapitalize="none"
-              spellCheck={false}
-              inputMode="email"
-              placeholder="nombre@mail.com"
-              error={errors.email}
-              {...bind("email", email, setEmail)}
-            />
-            <TextField
-              id="password"
-              label="Contraseña"
-              type={show ? "text" : "password"}
-              autoComplete="new-password"
-              placeholder="Mínimo 8 caracteres"
-              error={errors.password}
-              right={
-                <button
-                  type="button"
-                  className="lg-toggle"
-                  onClick={() => setShow((s) => !s)}
-                  aria-pressed={show}
-                  aria-label="Mostrar contraseñas"
-                >
-                  {show ? "Ocultar" : "Mostrar"}
-                </button>
-              }
-              {...bind("password", password, setPassword)}
-            />
-            <TextField
-              id="confirm"
-              label="Confirmar contraseña"
-              type={show ? "text" : "password"}
-              autoComplete="new-password"
-              placeholder="Repetí la contraseña"
-              error={errors.confirm}
-              {...bind("confirm", confirm, setConfirm)}
-            />
-
-            <p role="alert" className="lg-error">{errors.form}</p>
-
-            <button type="submit" className="lg-btn" disabled={loading}>
-              {loading ? "Creando cuenta…" : "Crear cuenta"}
-            </button>
-          </form>
-
-          <div className="lg-or"><span>o registrate con</span></div>
-          <div className="lg-social">
-            <button type="button" className="lg-ghost">Google</button>
-            <button type="button" className="lg-ghost">Apple</button>
-          </div>
-
-          <p className="lg-foot">
-            ¿Ya tenés cuenta? <Link to="/login" className="lg-link">Iniciar sesión</Link>
-          </p>
-          <p className="lg-foot" style={{ marginTop: 12 }}>
-            Al crear tu cuenta aceptás los <Link to="/terminos" className="lg-link">Términos</Link> y la{" "}
-            <Link to="/privacidad" className="lg-link">Política de privacidad</Link>.
-          </p>
+          ¿Ya tenés cuenta?{" "}
+          <Link to="/login" className="text-ink underline underline-offset-4 hover:opacity-90">
+            Entrá
+          </Link>
         </>
-      )}
+      }
+    >
+      <form onSubmit={onSubmit} noValidate className="space-y-4">
+        <Field
+          label="Nombre"
+          autoComplete="name"
+          placeholder="Juan"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          error={errors.name}
+        />
+        <Field
+          label="Mail"
+          type="email"
+          autoComplete="email"
+          placeholder="tu@mail.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={errors.email}
+        />
 
-      {step === "channels" && (
-        <>
-          <h1 className="lg-h1" ref={h1} tabIndex={-1}>Hablá con Travy donde quieras.</h1>
-          <p className="lg-sub">
-            Conectá WhatsApp o Telegram para consultar tu viaje y recibir avisos desde el chat.
-            Podés hacerlo más tarde.
-          </p>
-
-          <ChannelCard
-            name="WhatsApp"
-            hint="Te mandamos un código por WhatsApp para confirmar que el número es tuyo."
-            onChange={setWa}
-          />
-          <ChannelCard
-            name="Telegram"
-            hint="Te mandamos un código por Telegram para confirmar que la cuenta es tuya."
-            onChange={setTg}
-          />
-
-          <div className="lg-actions">
-            {anyChannel ? (
-              <button type="button" className="lg-btn" onClick={() => setStep("done")}>Continuar</button>
-            ) : (
-              <button type="button" className="lg-ghost" style={{ flex: 1 }} onClick={() => setStep("done")}>
-                Omitir por ahora
+        <div>
+          <label htmlFor="phone" className="mb-2 block px-1 text-sm text-ink">
+            Teléfono <span className="text-soft">(opcional)</span>
+          </label>
+          <div className="flex gap-2">
+            <div ref={countryRef} className="relative w-[116px] shrink-0">
+              <button
+                type="button"
+                onClick={() => setCountryOpen((o) => !o)}
+                aria-label="Código de país"
+                aria-haspopup="listbox"
+                aria-expanded={countryOpen}
+                className={`${inputClass(false)} input flex w-full items-center justify-between gap-2 px-4 text-left outline-none`}
+              >
+                <span className="truncate">{selectedCountry.label}</span>
+                <HugeiconsIcon
+                  icon={ChevronDownIcon}
+                  className={`size-4 shrink-0 text-white/50 transition-transform duration-200 ${countryOpen ? "rotate-180" : ""
+                    }`}
+                />
               </button>
-            )}
-          </div>
-        </>
-      )}
 
-      {step === "done" && (
-        <>
-          <h1 className="lg-h1" ref={h1} tabIndex={-1}>Tu cuenta está lista.</h1>
-          <p className="lg-sub">
-            Contale a Travy cómo viajás y te sugiere cosas que sí van con vos. Son un par de minutos
-            y es opcional.
-          </p>
-          <div className="lg-actions" style={{ marginTop: 0 }}>
-            <button type="button" className="lg-btn" onClick={() => nav("/perfil/configurar")}>
-              Configurar mi perfil
-            </button>
-            <button type="button" className="lg-ghost" onClick={() => nav("/app")}>
-              Más tarde
-            </button>
+              {countryOpen && (
+                <div
+                  role="listbox"
+                  className="absolute left-0 top-[calc(100%+6px)] z-50 max-h-60 min-w-[160px] overflow-y-auto rounded-2xl border border-white/10 bg-[#151513] p-1.5 shadow-xl shadow-black/20"
+                >
+                  {COUNTRIES.map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      role="option"
+                      aria-selected={country === c.code}
+                      onClick={() => {
+                        setCountry(c.code);
+                        setCountryOpen(false);
+                      }}
+                      className={`flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${country === c.code
+                          ? "bg-white/[0.08] text-white"
+                          : "text-white/70 hover:bg-white/[0.05] hover:text-white"
+                        }`}
+                    >
+                      <span className="truncate">{c.label}</span>
+                      {country === c.code && (
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className="ml-auto size-4 shrink-0 text-[#4c7dff]">
+                          <path d="m5 10 3.2 3.2L15 6.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <input
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              placeholder="11 2345 6789"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              aria-invalid={!!errors.phone}
+              aria-describedby="phone-note"
+              className="input px-4 py-3"
+            />
           </div>
-        </>
-      )}
-    </AuthShell>
+          <p id="phone-note" className={`mt-2 px-1 text-xs leading-snug ${errors.phone ? "text-[#ff8a8a]" : "text-soft"}`}>
+            {errors.phone ??
+              "Conectalo con Travy para hablar por WhatsApp o Telegram y recibir avisos de tu viaje. Podés hacerlo después."}
+          </p>
+        </div>
+
+        <PasswordField
+          label="Contraseña"
+          autoComplete="new-password"
+          placeholder="Mínimo 8 caracteres"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={errors.password}
+        />
+
+        <div className="space-y-3">
+          <div>
+            <Checkbox checked={terms} onChange={setTerms} error={!!errors.terms}>
+              Acepto los{" "}
+              <Link to="/terminos" className="text-ink underline underline-offset-4 transition-opacity hover:opacity-90">
+                términos y condiciones
+              </Link>{" "}
+              y la{" "}
+              <Link to="/privacidad" className="text-ink underline underline-offset-4 transition-opacity hover:opacity-90">
+                política de privacidad
+              </Link>
+              .
+            </Checkbox>
+            {errors.terms && <p className="mt-2 px-1 text-xs text-[#ff8a8a]">{errors.terms}</p>}
+          </div>
+
+          <Checkbox checked={promos} onChange={setPromos}>
+            Quiero recibir novedades y promociones de Travelly por mail. Podés cancelarlo cuando quieras.
+          </Checkbox>
+        </div>
+
+        {errors.form && (
+          <p role="alert" className="rounded-2xl bg-[#ff6b6b]/10 px-4 py-3 text-sm text-[#ff8a8a]">
+            {errors.form}
+          </p>
+        )}
+
+        <PrimaryButton loading={loading}>Crear cuenta</PrimaryButton>
+        <Divider />
+        <GoogleButton />
+      </form>
+    </AuthLayout>
   );
 }

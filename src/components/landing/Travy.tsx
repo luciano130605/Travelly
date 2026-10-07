@@ -90,8 +90,9 @@ export default function Travy() {
             "
           >
             <a
-              href={tab === 'app' ? '/login' : WA_URL}
-              target={tab === 'wa' ? '_blank' : undefined}
+              // href={tab === 'app' ? '/login' : WA_URL}
+              href='#top'
+              // target={tab === 'wa' ? '_blank' : undefined}
               rel={
                 tab === 'wa'
                   ? 'noopener noreferrer'

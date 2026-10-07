@@ -207,7 +207,7 @@ export default function WhatsAppButton() {
             sm:pb-2
           "
         >
-          <a
+          {/* <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -223,7 +223,23 @@ export default function WhatsAppButton() {
             "
           >
             Probar en WhatsApp
-          </a>
+          </a> */}
+          <button
+          disabled={true}
+            rel="noopener noreferrer"
+            tabIndex={open ? 0 : -1}
+            className="
+              flex
+              h-11
+              min-w-0
+              flex-1
+              items-center
+              justify-center
+             btn-primary
+            "
+          >
+            Próximamente
+          </button>
 
 
         </div>

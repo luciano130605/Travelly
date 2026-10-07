@@ -242,7 +242,7 @@ export default function Header() {
         </ul>
 
         <div className="flex items-center gap-2 justify-self-end">
-          <Link
+          {/* <Link
             to="/registro"
             className={[
               'inline-block whitespace-nowrap rounded-full btn-primary',
@@ -259,7 +259,7 @@ export default function Header() {
                 <span className="hidden sm:inline">Empezar a planificar</span>
               </>
             )}
-          </Link>
+          </Link> */}
 
           <button
             type="button"
